@@ -1,0 +1,8 @@
+unsorted=y
+artwork=y
+excludeList=".excludes"
+exec="chmod 664 '{quote file}'"
+ut_dir="$ARG_PATH"
+ut_kind="multi"
+ut_title="$ARG_NAME"
+ut_label="$ARG_LABEL"
