@@ -14,7 +14,7 @@ allOf
       { norm(n).colon(" - ").replaceTrailingBrackets() }
       { "($y)" }
     .join(" ") }
-  { episode.special ? 'Specials' : 'Season ' + s.pad(2) }
+  { episode.special ? 'Specials' : 'Season ' + s }
   { allOf
     { norm(n).colon(", ").replaceTrailingBrackets() }
     { episode.special ? 'S00E' + special.pad(2) : s00e00 }
