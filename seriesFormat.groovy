@@ -26,7 +26,7 @@ allOf
         { allOf
           {"["}
           { allOf
-            {[vf,vc].join(" ")}
+            { allOf{vf}{vc}.join(" ") }
             { audio.collect { au ->
               def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)'] } 
               def ch = channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
