@@ -1,0 +1,3 @@
+[submodule "rednoah"]
+	path = rednoah
+	url = https://github.com/devster31/filebot-scripts-rednoah.git
