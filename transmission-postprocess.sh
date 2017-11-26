@@ -11,8 +11,6 @@ ARG_NAME="$TR_TORRENT_NAME"
 ARG_LABEL="N/A"
 
 # Configuration
-#CONFIG_OUTPUT="/mnt/usbhdd/Movies"
-#CONFIG_OUTPUT="/mnt/bellatrix/Media"
 CONFIG_OUTPUT="/mnt/antares/Media"
 
 if [[ "$TR_TORRENT_DIR" =~ ^/mnt/usbhdd.* ]]
@@ -20,7 +18,7 @@ then
     exit 0
 fi
 
-LINKS=($(find $ARG_PATH -type l))
+LINKS=($(find "$ARG_PATH" -type l))
 if [[ ${#LINKS[@]} -gt 0 ]]
 then
     exit 0
@@ -28,12 +26,26 @@ fi
 
 transmission-remote -t ${TR_TORRENT_ID} -S
 
-sudo -H -u devster -g devster -- /usr/bin/filebot -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict auto \
-    --log-file amc.log --def subtitles=en artwork=y excludeList=".excludes" \
-    ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
-    exec="chmod 664 {quote file}" \
-    --def @/mnt/antares/scripts/pushover.txt \
-    --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
-    --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy
+if [[ "$TR_TORRENT_DIR" =~ ^/mnt/bellatrix/downloads/tv_shows.* ]]
+then
+# exec="chmod 664 {quote file} ; docker exec rpi3_medusa curl -s -w '\n' 'http://localhost:8081/api/v1/***REMOVED***?cmd=show.refresh&tvdbid={info.id}'" \
+    sudo -H -u devster -g devster -- /usr/bin/filebot -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
+        --filter '!readLines("/mnt/antares/scripts/tv_excludes.txt").contains(n)' \
+        -non-strict --log-file amc.log --def subtitles=en artwork=y excludeList=".excludes" \
+        --def ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
+        --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.id}" \
+        --def @/mnt/antares/scripts/pushover.txt \
+        --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
+        --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy
+else
+    sudo -H -u devster -g devster -- /usr/bin/filebot -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
+        --filter '!readLines("/mnt/antares/scripts/movie_excludes.txt").contains(n)' \
+        --log-file amc.log --def subtitles=en artwork=y excludeList=".excludes" \
+        ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
+        exec="chmod 664 {quote file}" \
+        --def @/mnt/antares/scripts/pushover.txt \
+        --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
+        --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy
+fi
 
 transmission-remote -t ${TR_TORRENT_ID} -s
