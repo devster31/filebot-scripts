@@ -26,6 +26,7 @@ allOf
         { allOf
           {"["}
           { allOf
+            // Video stream
             { allOf{vf}{vc}.join(" ") }
             { audio.collect { au ->
               def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)'] } 

@@ -40,15 +40,18 @@ allOf
     {" ["}
     { allOf
       // Video stream
-      {[vf,vc].join(" ")}
+      { allOf{vf}{vc}.join(" ") }
       { audio.collect { au ->
         def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)'] }
         def ch = channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
-                         .tokenize('\\/')*.toDouble()
+                         .tokenize('\\/').take(3)*.toDouble()
                          .inject(0, { a, b -> a + b }).findAll { it > 0 }
                          .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
         def codec = any{ au['CodecID/Hint'] }{ au['Format'] }.replaceAll(/['`´‘’ʻ\p{Punct}\p{Space}]/, '')
-        return allOf{ch}{codec}{Language.findLanguage(au['Language']).ISO3.upperInitial()} }*.join(" ").join(", ") }
+        def profile_m = any{au['Format_Profile']}{''} =~ /(?<fp>ES|Pro|MA Core|LC)/
+        def profile = profile_m ? profile_m.group('fp') : ''
+        return allOf{ch}{allOf{codec}{profile}.join('-')}{Language.findLanguage(au['Language']).ISO3.upperInitial()}
+      }.sort().reverse()*.join(" ").join(", ") }
       {source}
       .join(" - ") }
     {"]"}
