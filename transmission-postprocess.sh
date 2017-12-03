@@ -26,17 +26,18 @@ fi
 
 transmission-remote -t ${TR_TORRENT_ID} -S
 
-if [[ "$TR_TORRENT_DIR" =~ ^/mnt/bellatrix/downloads/tv_shows.* ]]
+if [[ "$TR_TORRENT_DIR" =~ ^/mnt/bellatrix/downloads/(tv_shows|anime).* ]]
 then
 # exec="chmod 664 {quote file} ; docker exec rpi3_medusa curl -s -w '\n' 'http://localhost:8081/api/v1/***REMOVED***?cmd=show.refresh&tvdbid={info.id}'" \
     sudo -H -u devster -g devster -- /usr/bin/filebot -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
         --filter '!readLines("/mnt/antares/scripts/tv_excludes.txt").contains(n)' \
-        -non-strict --log-file amc.log --def subtitles=en artwork=y excludeList=".excludes" \
+        -non-strict --log-file amc.log --def artwork=y excludeList=".excludes" \
         --def ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
         --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.id}" \
         --def @/mnt/antares/scripts/pushover.txt \
         --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
-        --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy
+        --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy \
+        --def animeFormat=@/mnt/antares/scripts/animeFormat.groovy
 else
     sudo -H -u devster -g devster -- /usr/bin/filebot -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
         --filter '!readLines("/mnt/antares/scripts/movie_excludes.txt").contains(n)' \
