@@ -6,14 +6,17 @@ location=$2 # {f.dir.dir}
 tvdbid=${3:-x} # {info.id}
 
 chmod 664 "${file}"
+filebot -script fn:suball --def maxAgeDaysLimit=false maxAgeDays=3000d "${file}"
 echo "${location/mnt/downloads}"
 
 [ ${tvdbid} == "x" ] && exit 0
 
-http --check-status --ignore-stdin --body \
+http --check-status --ignore-stdin --body --pretty=format \
     :8081/api/v1/${MEDUSA_API_KEY}/ \
     cmd=="show.refresh" \
     indexerid=="${tvdbid}"
+
+printf "\n"
 
 #check_show="$(http --check-status --ignore-stdin --body :8081/api/v1/"${MEDUSA_API_KEY}" cmd==shows)"
 #echo "${check_show}"
