@@ -47,11 +47,17 @@ allOf
                          .tokenize('\\/').take(3)*.toDouble()
                          .inject(0, { a, b -> a + b }).findAll { it > 0 }
                          .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
-        def codec = any{ au['CodecID/Hint'] }{ au['Format'] }.replaceAll(/['`´‘’ʻ\p{Punct}\p{Space}]/, '')
-        def profile_m = any{au['Format_Profile']}{''} =~ /(?<fp>ES|Pro|MA Core|LC)/
-        def profile = profile_m ? profile_m.group('fp') : ''
-        return allOf{ch}{allOf{codec}{profile}.join('-')}{Language.findLanguage(au['Language']).ISO3.upperInitial()}
-      }.sort().reverse()*.join(" ").join(", ") }
+        def codec = any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] }.replaceAll(/['`´‘’ʻ]/, '')
+        def format = any{ au['CodecID/Hint'] }{ au['Format'] }.replaceAll(/['`´‘’ʻ\p{Punct}\p{Space}]/, '')
+        def format_profile = any{au['Format_Profile']}{'a'}.findAll(/ES(?= Matrix| Discrete)|MA|HRA|Atmos/)
+        // def profile_m = any{au['Format_Profile']}{''} =~ /(?<fp>ES|Pro|MA Core|LC)/
+        // def profile = profile_m ? profile_m.group('fp') : ''
+        def stream = allOf
+                       {ch}
+                       { allOf{codec}{format_profile[0]}.join('+') }
+                       { Language.findLanguage(au['Language']).ISO3.upperInitial() }
+        return stream
+      }.sort().reverse()*.join(" ").join(", ").replaceAll("AC3\\+", "EAC3").replaceAll("DTS\\+ES", "DTS-ES") }
       {source}
       .join(" - ") }
     {"]"}
