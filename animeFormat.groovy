@@ -15,7 +15,7 @@ allOf
   { allOf
     // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
     { norm(n).colon(", ").replaceTrailingBrackets() }
-    { episode.special ? "S$special" : absolute.pad(2) }
+    { episode.special ? "S$special" : "EP" + absolute.pad(2) }
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { norm(t).colon(", ") }
@@ -26,7 +26,7 @@ allOf
           { allOf
             // Video stream
             { allOf{vf}{vc}.join(" ") }
-            { def audioClean = { it.replaceAll(/[\p{Punct}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
+            { def audioClean = { it.replaceAll(/[\p{Pd}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
               // map Codec + Format Profile
               def mCFP = [ "AC3" : "AC3",
                            "AC3+" : "E-AC3",
@@ -40,7 +40,7 @@ allOf
                                .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
               def codec = audioClean(any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] })
               def format = any{ au['CodecID/Hint'] }{ au['Format'] }
-              def format_profile = ( au['Format_Profile'] != null) ? audioClean(au['Format_Profile']) : ''
+              def format_profile = { if ( au['Format_Profile'] != null) audioClean(au['Format_Profile']) else '' }
               def combined = allOf{codec}{format_profile}.join(' ')
               def stream = allOf
                              { ch }
@@ -53,9 +53,9 @@ allOf
           .join("") }
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join()
           if (ed) { return ".$ed" } }
+        { "[" + crc32 + "]" }
         { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn)
           (grp && grp == group) ? "-$group" : "-$grp" }
-        { "_[" + crc32 + "]" }
         {subt}
         .join("") }
       .join(" ") }
