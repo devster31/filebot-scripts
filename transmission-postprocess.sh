@@ -18,6 +18,12 @@ then
     exit 0
 fi
 
+if [[ "$TR_TORRENT_DIR" =~ ^/mnt/bellatrix/downloads/books.* ]]
+then
+    exit 0
+fi
+
+
 LINKS=($(find "$ARG_PATH" -type l))
 if [[ ${#LINKS[@]} -gt 0 ]]
 then
@@ -33,7 +39,7 @@ then
         --filter '!readLines("/mnt/antares/scripts/tv_excludes.txt").contains(n)' \
         -non-strict --log-file amc.log --def artwork=y excludeList=".excludes" \
         --def ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
-        --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.id}" \
+        --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.database} {info.id} {quote info.name}" \
         --def @/mnt/antares/scripts/pushover.txt \
         --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
         --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy \
