@@ -52,21 +52,22 @@ allOf
                              { Language.findLanguage(au['Language']).ISO3.upperInitial() }
               return stream }*.join(" ").join(", ") }
             // { any{source}{ if (fn.match(/web/)) { return "WEB-DL" }} }
-            { def isWeb = (source ==~ /WEB.*/)
-              // logo-free release source finder
-              def lfr = isWeb ? (fn =~ /(AMZN|HBO|HULU|NF|iT)\.(WEB)/) : null
-              ret = allOf{lfr[0][1]}{source}.join(".")
-              return ret
-              source }
+            { // logo-free release source finder
+              def websources = readLines("/mnt/antares/scripts/websources.txt").join("|")
+              def isWeb = (source ==~ /WEB.*/)
+              // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
+              def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
+              return allOf{lfr}{source}.join(".") }
             .join(" - ") }
           {"]"}
           .join("") }
-        { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join()
+        { def ed = fn.match(/repack|proper/).upper()
+          // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join('.')
           if (ed) { return ".$ed" } }
         { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ''))
           (grp) ? "-$grp" : "-$group" }
-          // def grp = fn.match(/(?<=[-])\w+$/)
-          // "-$grp"
+        /* { def grp = fn.match(/(?<=[-])\w+$/)
+          any{"-$group"}{"-$grp"} } */
         {subt}
         .join("") }
       .join(" ") }
