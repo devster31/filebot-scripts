@@ -7,7 +7,13 @@ database=${3} # {info.DataBase}
 id=${4:-x} # {info.id}
 name="${5}" # {info.Name}
 
+if [[ ! -f "$1" ]]; then
+    echo "No ouput file"
+    exit 0
+fi
+
 chmod 664 "${file}"
+export JAVA_OPTS="-Xmx128M"
 filebot -script fn:suball --def maxAgeDaysLimit=false maxAgeDays=3000d "${file}"
 echo "${location/mnt/downloads}"
 
