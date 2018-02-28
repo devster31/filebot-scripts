@@ -1,0 +1,125 @@
+ 9Now 						9NOW
+ A&E 						AE
+ ABC (AU)					AUBC
+ ABC (US)					AMBC
+ Adult Swim					AS
+ Al Jazeera English				AJAZ
+ Amazon						AMZN
+ AMC						AMC
+ America's Test Kitchen				ATK
+ Animal Planet					ANPL
+ AnimeLab					ANLB
+ AOL						AOL
+ ARD						ARD
+ BBC iPlayer					iP
+ BravoTV						BRAV
+ Canal+						CNLP
+ Cartoon Network					CN
+ CBC						CBC
+ CBS						CBS
+ Channel 4					4OD
+ CHRGD						CHGD
+ Cinemax						CMAX
+ CNBC						CNBC
+ Comedy Central					CC
+ Comedians in Cars Getting Coffee		CCGC
+ Cooking Channel					COOK
+ Country Music Television			CMT
+ Crackle						CRKL
+ Crunchy Roll					CR
+ CSpan						CSPN
+ CTV						CTV
+ CuriosityStream					CUR
+ CWSeed						CWS
+ Daisuki						DSKI
+ Deadhouse Films					DHF
+ Destination America				DEST
+ Digiturk Dilediğin Yerde			DDY
+ DirecTV Now			        	DTV
+ Discovery Channel				DISC
+ Disney						DSNY
+ DIY Network					DIY
+ Doc Club					DOCC
+ DPlay						DPLY
+ E!						ETV
+ El Trece					ETTV
+ EPIX						EPIX
+ ESPN						ESPN
+ Esquire						ESQ
+ Family						FAM
+ Family Jr					FJR
+ Food Network					FOOD
+ Fox						FOX
+ Freeform					FREE
+ FYI Network					FYI
+ Global						GLBL
+ GloboSat Play					GLOB
+ go90						GO90
+ NHL GameCenter					GC
+ Hallmark					HLMK
+ HBO						HBO
+ HGTV						HGTV
+ HIDIVE						HIDI
+ History Channel                			HIST
+ Hulu						HULU
+ Ici TOU.TV					TOU
+ IFC						IFC
+ Investigation Discovery				ID
+ iTunes 						iT
+ ITV						ITV
+ Knowledge Network				KNOW
+ Lifetime					LIFE
+ Loving Nature					LN
+ MSNBC						MNBC
+ Motor Trend OnDemand				MTOD
+ MTV						MTV
+ National Geographic				NATG
+ NBA League Pass					NBA
+ NBC						NBC
+ Netflix						NF
+ NFL Now						NFLN
+ NFL Network					NFL
+ Nickelodeon					NICK
+ Norsk Rikskringkasting				NRK
+ Pluzz						PLUZ
+ PBS						PBS
+ PBS Kids					PBSK
+ Playstation Network				PSN
+ Rooster Teeth (Staff approval needed)		RSTR
+ RTÉ						RTE
+ SBS (AU)					SBS
+ Seeso						SESO
+ Shomi						SHMI
+ Spike                           		SPIK
+ Sportsnet					SNET
+ Sprout						SPRT
+ Stan						STAN
+ Starz						STZ
+ Sveriges Television				SVT
+ SwearNet					SWER
+ SyFy						SYFY
+ TBS						TBS
+ TenPlay						TEN
+ TFOU						TFOU
+ TLC						TLC
+ Travel Channel					TRVL
+ TubiTV						TUBI
+ TV3 (IE)					TV3
+ TV4 (SE)					TV4
+ TVLand						TVL
+ VH1						VH1
+ Viceland					VICE
+ Vimeo (Staff approval needed)			VMEO
+ UFC						UFC
+ UKTV						UKTV
+ Univision					UNIV
+ Velocity					VLCT
+ Viaplay (originals only)			VIAP
+ VRV						VRV
+ W Network					WNET
+ WatchMe						WME
+ WWE Network					WWEN
+ Xbox Video					XBOX
+ Yahoo 						YHOO
+ YouTube Red					RED
+ ZDF						ZDF

@@ -24,7 +24,7 @@ allOf
   // Movies directory
   // {n.colon(" - ") + " ($y, $director)"}
   { def film_directors = info.directors.sort().join(", ")
-    n.colon(" - ") + " ($y; $film_directors)" }
+    n.colon(" - ") + " ($y) [$film_directors]" }
   // File name
   { allOf
     { isLatin(primaryTitle) ? primaryTitle.colon(" - ") : transl(primaryTitle).colon(" - ") }
@@ -57,8 +57,16 @@ allOf
                        { allOf{codec}{format_profile[0]}.join('+') }
                        { Language.findLanguage(au['Language']).ISO3.upperInitial() }
         return stream
-      }.sort().reverse()*.join(" ").join(", ").replaceAll("AC3\\+", "EAC3").replaceAll("DTS\\+ES", "DTS-ES") }
-      {source}
+      }.sort{a, b -> a.first() <=> b.first() }.reverse()*.join(" ").join(", ")
+       .replaceAll("AC3\\+", "EAC3").replaceAll("DTS\\+ES", "DTS-ES")
+       .replaceAll('MPEG-1 Audio layer 3', 'MP3') }
+      /* source */
+      { // logo-free release source finder
+        def websources = readLines("/mnt/antares/scripts/websources.txt").join("|")
+        def isWeb = (source ==~ /WEB.*/)
+        // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
+        def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
+        return allOf{lfr}{source}.join(".") }
       .join(" - ") }
     {"]"}
     { def ed = fn.findAll(/(?i:repack|proper)/)*.upper().join()
