@@ -21,11 +21,11 @@ echo "${location/mnt/downloads}"
 
 if [[ "${database}" = "AniDB" ]]
 then
-  id=$(http --body :8081/api/v1/"${MEDUSA_API_KEY}"/ cmd=='shows' sort==name | jq --arg n "${name}" '.data | .[$n].indexerid')
+  id=$(http --body :8081/medusa/api/v1/"${MEDUSA_API_KEY}"/ cmd=='shows' sort==name | jq --arg n "${name}" '.data | .[$n].indexerid')
 fi
 
 http --check-status --ignore-stdin --body --pretty=format \
-    :8081/api/v1/${MEDUSA_API_KEY}/ \
+    :8081/medusa/api/v1/${MEDUSA_API_KEY}/ \
     cmd=="show.refresh" \
     indexerid=="${id}"
 
