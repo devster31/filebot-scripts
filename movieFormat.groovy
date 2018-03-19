@@ -22,7 +22,6 @@ allOf
       return "Movies"
     } }
   // Movies directory
-  // {n.colon(" - ") + " ($y, $director)"}
   { def film_directors = info.directors.sort().join(", ")
     n.colon(" - ") + " ($y) [$film_directors]" }
   // File name
