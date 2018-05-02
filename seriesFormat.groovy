@@ -34,17 +34,28 @@ allOf
               // map Codec + Format Profile
               def mCFP = [ "AC3" : "AC3",
                            "AC3+" : "E-AC3",
+                           "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
                            "AAC LC LC" : "AAC-LC",
                            "AAC LC SBR HE AAC LC": "HE-AAC" ]
               audio.collect { au ->
-              def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)'] } 
-              def ch = channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
-                               .tokenize('\\/').take(3)*.toDouble()
-                               .inject(0, { a, b -> a + b }).findAll { it > 0 }
-                               .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+              def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)/String'] }{ au['Channel(s)'] } 
+              def ch = { if ( channels =~ /object/ ) {
+                 any
+                   { au['Channel(s)/String'] }
+                   { au['Channel(s)'] }
+                 .replaceAll(/object(s)?/, 'obj')
+                 .replaceAll(/channel(s)?/, 'ch')
+                 .replaceAll(/\//, '+')
+                 .replaceAll(/\p{Space}/, '')
+              } else {
+                channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
+                        .tokenize('\\/').take(3)*.toDouble()
+                        .inject(0, { a, b -> a + b }).findAll { it > 0 }
+                        .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+              } }
               def codec = audioClean(any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] })
               def format = any{ au['CodecID/Hint'] }{ au['Format'] }
-              def format_profile = { if ( au['Format_Profile'] != null) audioClean(au['Format_Profile']) else '' }
+              def format_profile = { if ( au['Format_Profile'] != null ) audioClean(au['Format_Profile']) else '' }
               def combined = allOf{codec}{format_profile}.join(' ')
               def stream = allOf
                              { ch }
