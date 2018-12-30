@@ -43,7 +43,7 @@ then
         -non-strict --log-file amc.log --def excludeList=".excludes" \
         --def ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
         --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.database} {info.id} {quote info.name}" \
-        --def @/mnt/antares/scripts/pushover.txt \
+        --def @/mnt/antares/scripts/notify.txt \
         --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
         --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy \
         --def animeFormat=@/mnt/antares/scripts/animeFormat.groovy
@@ -53,7 +53,7 @@ else
         --log-file amc.log --def subtitles=en artwork=y excludeList=".excludes" \
         ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
         exec="chmod 664 {quote file} ; setfacl -m user:transmission:rw {quote file}" \
-        --def @/mnt/antares/scripts/pushover.txt \
+        --def @/mnt/antares/scripts/notify.txt \
         --def movieFormat=@/mnt/antares/scripts/movieFormat.groovy \
         --def seriesFormat=@/mnt/antares/scripts/seriesFormat.groovy
 fi
