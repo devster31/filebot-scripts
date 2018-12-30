@@ -40,7 +40,7 @@ then
 # exec="echo {quote file},{quote f.dir.dir},{info.database},{info.id},{quote info.name} > $tmpfile"
     sudo -H -u devster -g devster -- $FILEBOT -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
         --filter '!readLines("/mnt/antares/scripts/tv_excludes.txt").contains(n)' \
-        -non-strict --log-file amc.log --def artwork=y excludeList=".excludes" \
+        -non-strict --log-file amc.log --def excludeList=".excludes" \
         --def ut_dir="$ARG_PATH" ut_kind="multi" ut_title="$ARG_NAME" ut_label="$ARG_LABEL" \
         --def exec="/mnt/antares/scripts/post-script.sh {quote file} {quote f.dir.dir} {info.database} {info.id} {quote info.name}" \
         --def @/mnt/antares/scripts/pushover.txt \
