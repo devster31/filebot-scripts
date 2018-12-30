@@ -65,7 +65,7 @@ allOf
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
         def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
-        return allOf{lfr}{source}.join(".") }
+        return allOf{fn.match(/(?i)(UHD).$source/).upper()}{lfr}{source}.join(".") }
       .join(" - ") }
     {"]"}
     { def ed = fn.findAll(/(?i:repack|proper)/)*.upper().join()
