@@ -22,7 +22,7 @@ allOf
     { episode.special ? 'S00E' + special.pad(2) : s00e00 }
     { allOf
       // { t.replacePart(replacement = ", Part $1") }
-      { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].t).colon(", ") : norm(t).colon(", ") }
+      { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].t).colon(", ").slash("\u2571") : norm(t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
       {"PT $pi"}
       { allOf
         { allOf
