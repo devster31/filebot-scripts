@@ -1,1 +1,4 @@
 pushover=***REMOVED***:***REMOVED***
+mail=smtp.mailgun.org:587:filebot@mail.dispenser.ovh:filebot@mail.dispenser.ovh:***REMOVED***
+mailto=devster31@gmail.com
+reportError=y
