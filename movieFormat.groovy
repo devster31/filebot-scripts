@@ -5,6 +5,7 @@
                  .replaceAll(/[`´‘’ʻ""“”]/, "'")
                  .replaceAll(/[:|]/, " - ")
                  // .replaceAll(/[:]/, "\uFF1A")
+                 // .replaceAll(/[:]/, "\u2236") // ratio
                  .replaceAll(/[?]/, "\uFE56")
                  .replaceAll(/[*\s]+/, " ")
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
