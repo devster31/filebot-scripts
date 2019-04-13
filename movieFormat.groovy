@@ -30,11 +30,17 @@ allOf
     { isLatin(primaryTitle) ? primaryTitle.colon(" - ") : transl(primaryTitle).colon(" - ") }
     {" ($y)"}
     // tags + a few more variants
-    { specials = { allOf
-                     {tags}
-                     { def last = n.tokenize(" ").last()
-                       fn.after(/(?i:$last)/).findAll(/(?i:alternate[ ._-]cut|limited)/)*.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
-                     .flatten().sort() }
+    { def last = n.tokenize(" ").last()
+      def t = tags
+      t.removeIf { it ==~ /(?i:imax)/ }
+      specials = { allOf
+                    { t }
+                    { fn.after(/(?i:$last)/).findAll(/(?i:alternate[ ._-]cut|limited)/)*.
+                      upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
+                    { fn.after(/(?i:$last)/).findAll(/(?i:imax).(?i:edition|version)?/)*.
+                      upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")*.
+                      replaceAll(/(?i:imax)/, "IMAX") }
+                    .flatten().sort() }
       specials().size() > 0 ? specials().join(", ").replaceAll(/^/, " - ") : "" }
     {" PT $pi"}
     {" ["}
