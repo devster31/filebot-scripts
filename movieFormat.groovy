@@ -47,19 +47,44 @@ allOf
     { allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
-      { audio.collect { au ->
-        def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)'] }
-        def ch = channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
-                         .tokenize('\\/').take(3)*.toDouble()
-                         .inject(0, { a, b -> a + b }).findAll { it > 0 }
-                         .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+      { def audioClean = { it.replaceAll(/[\p{Pd}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
+        // map Codec + Format Profile
+        def mCFP = [ "AC3" : "AC3",
+                      "AC3+" : "E-AC3",
+                      "TrueHD" : "TrueHD",
+                      "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
+                      "DTS" : "DTS",
+                      "DTS HD HRA / Core" : "DTS-HD HRA",
+                      "DTS HD MA / Core" : "DTS-HD MA",
+                      "DTS HD X / MA / Core" : "DTS-X",
+                      "FLAC" : "FLAC",
+                      "PCM" : "PCM",
+                      "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
+                      "AAC LC LC" : "AAC-LC",
+                      "AAC LC SBR HE AAC LC": "HE-AAC" ]
+        audio.collect { au ->
+        def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)/String'] }{ au['Channel(s)'] }
+        def ch = { if ( channels =~ /object/ ) {
+          any
+            { au['Channel(s)/String'] }
+            { au['Channel(s)'] }
+          .replaceAll(/object(s)?/, 'obj')
+          .replaceAll(/channel(s)?/, 'ch')
+          .replaceAll(/\//, '+')
+          .replaceAll(/\p{Space}/, '')
+        } else {
+          channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
+                  .tokenize('\\/').take(3)*.toDouble()
+                  .inject(0, { a, b -> a + b }).findAll { it > 0 }
+                  .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+        } }
         def codec = any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] }.replaceAll(/['`´‘’ʻ]/, '')
         def format = any{ au['CodecID/Hint'] }{ au['Format'] }.replaceAll(/['`´‘’ʻ\p{Punct}\p{Space}]/, '')
         def format_profile = any{au['Format_Profile']}{'a'}.findAll(/ES(?= Matrix| Discrete)|MA|HRA|Atmos/)
         // def profile_m = any{au['Format_Profile']}{''} =~ /(?<fp>ES|Pro|MA Core|LC)/
         // def profile = profile_m ? profile_m.group('fp') : ''
         def stream = allOf
-                       {ch}
+                       { ch }
                        { allOf{codec}{format_profile[0]}.join('+') }
                        { Language.findLanguage(au['Language']).ISO3.upperInitial() }
         return stream
