@@ -17,7 +17,7 @@
 
 allOf
   // { if (vf.minus("p").toInteger() < 1080 || ((media.OverallBitRate.toInteger() / 1000 < 3000) && vf.minus("p").toInteger() >= 720)) { } }
-  { if ((media.OverallBitRate.toInteger() / 1000 < 3000) && vf.minus("p").toInteger() >= 720) {
+  { if ((media.OverallBitRate.toInteger() / 1000 < 3000 && vf.minus("p").toInteger() >= 720) || vf.minus("p").toInteger() < 720) {
       return "LQ_Movies"
     } else {
       return "Movies"
