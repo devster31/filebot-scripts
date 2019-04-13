@@ -62,7 +62,8 @@ allOf
        .replaceAll('MPEG-1 Audio layer 3', 'MP3') }
       /* source */
       { // logo-free release source finder
-        def websources = readLines("/mnt/antares/scripts/websources.txt").join("|")
+        def file = new File('/scripts/websources.txt')
+        def websources = file.exists() ? readLines(file).join("|") : null
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
         def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }

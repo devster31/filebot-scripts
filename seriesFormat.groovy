@@ -64,7 +64,8 @@ allOf
               return stream }*.join(" ").join(", ") }
             // { any{source}{ if (fn.match(/web/)) { return "WEB-DL" }} }
             { // logo-free release source finder
-              def websources = readLines("/mnt/antares/scripts/websources.txt").join("|")
+              def file = new File('/scripts/websources.txt')
+              def websources = file.exists() ? readLines(file).join("|") : null
               def isWeb = (source ==~ /WEB.*/)
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
