@@ -34,11 +34,19 @@ allOf
               // map Codec + Format Profile
               def mCFP = [ "AC3" : "AC3",
                            "AC3+" : "E-AC3",
+                           "TrueHD" : "TrueHD",
+                           "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
+                           "DTS" : "DTS",
+                           "DTS HD HRA / Core" : "DTS-HD HRA",
+                           "DTS HD MA / Core" : "DTS-HD MA",
+                           "DTS HD X / MA / Core" : "DTS-X",
+                           "FLAC" : "FLAC",
+                           "PCM" : "PCM",
                            "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
                            "AAC LC LC" : "AAC-LC",
                            "AAC LC SBR HE AAC LC": "HE-AAC" ]
               audio.collect { au ->
-              def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)/String'] }{ au['Channel(s)'] } 
+              def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)/String'] }{ au['Channel(s)'] }
               def ch = { if ( channels =~ /object/ ) {
                  any
                    { au['Channel(s)/String'] }
