@@ -36,9 +36,6 @@ transmission-remote -t ${TR_TORRENT_ID} -S
 export JAVA_OPTS="-Xmx256M"
 if [[ "$TR_TORRENT_DIR" =~ ^$MOUNT/bellatrix/downloads/(tv_shows|anime).* ]]
 then
-# exec="chmod 664 {quote file} ; docker exec rpi3_medusa curl -s -w '\n' 'http://localhost:8081/api/v1/***REMOVED***?cmd=show.refresh&tvdbid={info.id}'" \
-# tmpfile="$(mktemp -p /dev/shm/)"
-# exec="echo {quote file},{quote f.dir.dir},{info.database},{info.id},{quote info.name} > $tmpfile"
     sudo -H -u devster -g devster -- $FILEBOT -script fn:amc --action keeplink --output "$CONFIG_OUTPUT" --conflict skip \
         --filter '!readLines("$MOUNT/antares/scripts/tv_excludes.txt").contains(n)' \
         -non-strict --log-file amc.log --def excludeList=".excludes" \
