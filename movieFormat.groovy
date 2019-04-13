@@ -103,7 +103,7 @@ allOf
     {"]"}
     { def ed = fn.findAll(/(?i:repack|proper)/)*.upper().join()
       if (ed) { return "." + ed } }
-    {"-" + group}
+    {"-$group"}
     {subt}
     .join("") }
   .join("/") }
