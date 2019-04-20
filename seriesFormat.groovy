@@ -1,5 +1,4 @@
-{ import java.math.RoundingMode
-  import net.filebot.Language
+{ import net.filebot.Language
   def norm = { it.replaceAll(/[`´‘’ʻ""“”]/, "'")
                  .replaceAll(/[|]/, " - ")
                  .replaceAll(/[?]/, "\uFE56")
@@ -30,9 +29,8 @@ allOf
           { allOf
             // Video stream
             { allOf{vf}{vc}.join(" ") }
-            { def audioClean = { it.replaceAll(/[\p{Pd}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
-              // map Codec + Format Profile
-              def mCFP = [ "AC3" : "AC3",
+            { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
+                 def mCFP = [ "AC3" : "AC3",
                            "AC3+" : "E-AC3",
                            "TrueHD" : "TrueHD",
                            "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
@@ -44,32 +42,35 @@ allOf
                            "PCM" : "PCM",
                            "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
                            "AAC LC LC" : "AAC-LC",
-                           "AAC LC SBR HE AAC LC": "HE-AAC" ]
+                           "AAC LC SBR HE AAC LC": "HE-AAC" ] */
+
+              // map Codec + Format Profile
+              def mCFP = [
+                "FLAC" : "FLAC",
+                "PCM" : "PCM",
+                "MP3": "MP3",
+                "AC-3": "AC-3",
+                "E-AC-3 JOC": "E-AC-3",
+                "DTS ES XXCH": "DTS-ES Discrete",
+                "DTS XLL": "DTS-HD MA",
+                "MLP FBA": "TrueHD",
+                "MLP FBA 16-ch": "TrueHD"
+              ]
               audio.collect { au ->
-              def channels = any{ au['ChannelPositions/String2'] }{ au['Channel(s)_Original'] }{ au['Channel(s)/String'] }{ au['Channel(s)'] }
-              def ch = { if ( channels =~ /object/ ) {
-                 any
-                   { au['Channel(s)/String'] }
-                   { au['Channel(s)'] }
-                 .replaceAll(/object(s)?/, 'obj')
-                 .replaceAll(/channel(s)?/, 'ch')
-                 .replaceAll(/\//, '+')
-                 .replaceAll(/\p{Space}/, '')
-              } else {
-                channels.replaceAll(/Object\sBased\s\/|0.(?=\d.\d)/, '')
-                        .tokenize('\\/').take(3)*.toDouble()
-                        .inject(0, { a, b -> a + b }).findAll { it > 0 }
-                        .max().toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
-              } }
-              def codec = audioClean(any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] })
-              def format = any{ au['CodecID/Hint'] }{ au['Format'] }
-              def format_profile = { if ( au['Format_Profile'] != null ) audioClean(au['Format_Profile']) else '' }
-              def combined = allOf{codec}{format_profile}.join(' ')
-              def stream = allOf
-                             { ch }
-                             { mCFP.get(combined, format) }
-                             { Language.findLanguage(au['Language']).ISO3.upperInitial() }
-              return stream }*.join(" ").join(", ") }
+                def ac1 = any{ au['CodecID/Hint'] }{au['Format/String']}{ au['Format'] } // extends _ac_ which strips spaces > "CodecID/Hint", "Format"
+                def ac2 = any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] }
+                def atmos = (aco =~ /(?i:atmos)/) ? 'Atmos' : null // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
+                def combined = allOf{ac1}{ac2}.join(' ')
+                def fallback = any{ac1}{ac2}{aco}
+                def stream = allOf
+                  /* _channels_ as it uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
+                    compared to _af_ which uses "Channel(s)_Original", "Channel(s)" */
+                  { allOf{"${channels}"}{au['NumberOfDynamicObjects'] + "obj"}.join('+') }
+                  { allOf{ mCFP.get(combined, aco) }{atmos}.join('+') } /* bit risky keeping aco as default */
+                  { Language.findLanguage(au['Language']).ISO3.upperInitial() }
+                  /* _cf_ not being used > "Codec/Extensions", "Format" */
+                return stream
+              }.sort{a, b -> a.first() <=> b.first() }*.join(" ").join(", ") }
             // { any{source}{ if (fn.match(/web/)) { return "WEB-DL" }} }
             { // logo-free release source finder
               def file = new File('/scripts/websources.txt')
