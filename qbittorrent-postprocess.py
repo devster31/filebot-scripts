@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 
+"""
 async def fb(cmd):
     import select
     proc = subprocess.Popen(
@@ -24,8 +25,10 @@ async def fb(cmd):
 
             if result[1] == proc.stderr.name:
                 print(proc.stderr.readline())
+"""
 
-""" import asyncio
+"""
+import asyncio
 
 async def runc(args):
     proc = await asyncio.create_subprocess_exec(*args)
@@ -42,8 +45,24 @@ async def runc(args):
         print(l2)
 
 args = (['ping','-c','10','google.com'])
-asyncio.run(runc(args)) """
+asyncio.run(runc(args))
+"""
 # https://stackoverflow.com/questions/51133407/capture-stdout-and-stderr-of-process-that-runs-an-infinite-loop
+
+async def fb(cmd):
+    # shell vs exec
+    proc = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+    # read asyncronously proc.stdout
+    async for line in proc.stdout:
+        log.info(f'[stdout] {line.decode().rstrip()}')
+    # read asyncronously proc.stderr
+    async for line in proc.stderr:
+        log.info(f'[stderr] {line.decode().rstrip()}')
+    # Wait for the subprocess exit.
+    return await proc.wait()
 
 def main():
     scripts = os.getenv("SCRIPTS", default="/scripts")
@@ -87,9 +106,7 @@ def main():
     log.info('Value of --qb-size\t\t{}'.format(args.qb_size))
     log.info('Value of --qb-hash\t\t{}'.format(args.qb_hash))
 
-    qb_multi = args.qb_num > 1 : 'multi' ? 'single'
-    asyncio.run(
-        fb([filebot, '-script', 'fn:amc', '--action', 'keeplink',
+    cmd = [filebot, '-script', 'fn:amc', '--action', 'keeplink',
             '--output', media_out, '--conflict', 'skip', '-non-strict',
             '--filter' "'!readLines(\"{}\").contains(n)'".format(os.path.join(scripts, 'excludes.txt')),
             '--log-file', 'amc.log', '--def', 'excludelist=".excludes"',
@@ -98,9 +115,11 @@ def main():
             '@{}'.format(os.path.join(scripts, 'notify.txt')),
             '@{}'.format(os.path.join(scripts, 'movieFormat.groovy')),
             '@{}'.format(os.path.join(scripts, 'seriesFormat.groovy')),
-            '@{}'.format(os.path.join(scripts, 'animeFormat.groovy'))
-        ])
-    )
+            '@{}'.format(os.path.join(scripts, 'animeFormat.groovy'))]
+
+    qb_multi = args.qb_num > 1 : 'multi' ? 'single'
+    ret = asyncio.run(fb(cmd))
+    log.info(f'{cmd!r} exited with {ret}')
 
 if __name__ == '__main__':
     main()
