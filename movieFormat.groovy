@@ -18,20 +18,20 @@
 
   def translJap = {
     // rate limited to 100 per day I believe, please be careful
-    def url = new URL('https://api.kuroshiro.org/convert')
+    def url = new URL("https://api.kuroshiro.org/convert")
     def requestHeaders = [:]
     def postBody = [:]
       postBody.str = it
       postBody.to = "romaji"
       postBody.mode = "spaced"
       postBody.romajiSystem = "hepburn"
-    def postResponse = url.post(JsonOutput.toJson(postBody).getBytes('UTF-8'), 'application/json', requestHeaders)
+    def postResponse = url.post(JsonOutput.toJson(postBody).getBytes("UTF-8"), "application/json", requestHeaders)
     def json = new JsonSlurper().parseText(postResponse.text)
     return json.result
   }
 
   def transl = {
-    (languages.first().iso_639_2B == 'jpn') ? translJap(it) : it.transliterate("Any-Latin; NFD; NFC; Title") }
+    (languages.first().iso_639_2B == "jpn") ? translJap(it) : it.transliterate("Any-Latin; NFD; NFC; Title") }
 
 allOf
   // { if (vf.minus("p").toInteger() < 1080 || ((media.OverallBitRate.toInteger() / 1000 < 3000) && vf.minus("p").toInteger() >= 720)) { } }
@@ -65,7 +65,7 @@ allOf
     { allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
-      { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, ' ').replaceAll(/\p{Space}{2,}/, ' ') }
+      { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
            def mCFP = [ "AC3" : "AC3",
                       "AC3+" : "E-AC3",
                       "TrueHD" : "TrueHD",
@@ -87,6 +87,7 @@ allOf
           "PCM" : "PCM",
           "MP3": "MP3",
           "AC-3": "AC-3",
+          "AAC LC": "AAC LC",
           "E-AC-3 JOC": "E-AC-3",
           "DTS ES XXCH": "DTS-ES Discrete",
           "DTS XLL": "DTS-HD MA",
@@ -94,23 +95,24 @@ allOf
           "MLP FBA 16-ch": "TrueHD"
         ]
         audio.collect { au ->
-          def ac1 = any{ au['CodecID/Hint'] }{au['Format/String']}{ au['Format'] } // extends _ac_ which strips spaces > "CodecID/Hint", "Format"
-          def ac2 = any{ au['CodecID/String'] }{ au['Codec/String'] }{ au['Codec'] }
-          def atmos = (aco =~ /(?i:atmos)/) ? 'Atmos' : null // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
-          def combined = allOf{ac1}{ac2}.join(' ')
-          def fallback = any{ac1}{ac2}{aco}
+          def ac1 = any{ au["CodecID/Hint"] }{au["Format/String"]}{ au["Format"] } // extends _ac_ which strips spaces > "CodecID/Hint", "Format"
+          def ac2 = any{ au["CodecID/String"] }{ au["Codec/String"] }{ au["Codec"] }
+          def acon = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] } // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
+          def atmos = (acon =~ /(?i:atmos)/) ? "Atmos" : null
+          def combined = allOf{ac1}{ac2}.join(" ")
+          def fallback = any{ac1}{ac2}{acon}
           def stream = allOf
             /* _channels_ as it uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
                compared to _af_ which uses "Channel(s)_Original", "Channel(s)" */
-            { allOf{channels}{au['NumberOfDynamicObjects'] + "obj"}.join('+') }
-            { allOf{ mCFP.get(combined, aco) }{atmos}.join('+') } /* bit risky keeping aco as default */
-            { Language.findLanguage(au['Language']).ISO3.upperInitial() }
+            { allOf{channels}{au["NumberOfDynamicObjects"] + "obj"}.join("+") }
+            { allOf{ mCFP.get(combined, acon) }{atmos}.join("+") } /* bit risky keeping acon as default */
+            { Language.findLanguage(au["Language"]).ISO3.upperInitial() }
             /* _cf_ not being used > "Codec/Extensions", "Format" */
           return stream
         }.sort{a, b -> a.first() <=> b.first() }*.join(" ").join(", ") }
       /* source */
       { // logo-free release source finder
-        def file = new File('/scripts/websources.txt')
+        def file = new File("/scripts/websources.txt")
         def websources = file.exists() ? readLines(file).join("|") : null
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
