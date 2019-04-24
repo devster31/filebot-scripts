@@ -26,11 +26,10 @@ allOf
       { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].t).colon(", ").slash("\u2571") : norm(t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
       {"PT $pi"}
       { allOf
+        {" ["}
         { allOf
-          {"["}
-          { allOf
-            // Video stream
-            { allOf{vf}{vc}.join(" ") }
+          // Video stream
+          { allOf{vf}{vc}.join(" ") }
           { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
               def mCFP = [
                 "AC3" : "AC3",
@@ -111,12 +110,11 @@ allOf
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
               return allOf{lfr}{source}.join(".") }
-            .join(" - ") }
-          {"]"}
-          .join("") }
-        { def ed = fn.match(/repack|proper/).upper()
+          .join(" - ") }
+        {"]"}
+        { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
-          if (ed) { return ".$ed" } }
+          if (ed) { ".$ed" } }
         { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
           (grp) ? "-$grp" : "-$group" }
         /* { def grp = fn.match(/(?<=[-])\w+$/)

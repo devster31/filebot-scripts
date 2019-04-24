@@ -18,7 +18,7 @@
                                       .replaceAll(/\p{InCombiningDiacriticalMarks}+/, "") ==~ /^\p{InBasicLatin}+$/ }
 
   def translJap = {
-    // rate limited to 100 per day I believe, please be careful
+    /* rate limited to 100 per day I believe, please be careful */
     def url = new URL("https://api.kuroshiro.org/convert")
     def requestHeaders = [:]
     def postBody = [:]
@@ -35,13 +35,14 @@
     (languages.first().iso_639_2B == "jpn") ? translJap(it) : it.transliterate("Any-Latin; NFD; NFC; Title") }
 
 allOf
-  // { if (vf.minus("p").toInteger() < 1080 || ((media.OverallBitRate.toInteger() / 1000 < 3000) && vf.minus("p").toInteger() >= 720)) { } }
-  { if ((media.OverallBitRate.toInteger() / 1000 < 3000 && vf.minus("p").toInteger() >= 720) || vf.minus("p").toInteger() < 720) {
+  { if ((media.OverallBitRate.toInteger() / 1000 < 3000 && vf.minus("p").toInteger() >= 720)
+       || vf.minus("p").toInteger() < 720) {
       return "LQ_Movies"
     } else {
       return "Movies"
-    } }
-  // Movies directory
+    }
+  }
+  // Movie directory
   { def film_directors = info.directors.sort().join(", ")
     n.colon(" - ") + " ($y) [$film_directors]" }
   // File name
@@ -148,8 +149,9 @@ allOf
         return allOf{fn.match(/(?i)(UHD).$source/).upper()}{lfr}{source}.join(".") }
       .join(" - ") }
     {"]"}
-    { def ed = fn.findAll(/(?i:repack|proper)/)*.upper().join()
-      if (ed) { return "." + ed } }
+    { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
+      // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
+      if (ed) { ".$ed" } }
     /* { any{"-$group"}{"-" + fn.match(/(?:(?<=[-])\w+$)|(?:^\w+(?=[-]))/)} } */
     {"-$group"}
     {subt}
