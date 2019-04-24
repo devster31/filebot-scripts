@@ -1,4 +1,5 @@
 { import net.filebot.Language
+  import java.math.RoundingMode
   import groovy.json.JsonSlurper
   import groovy.json.JsonOutput
 
@@ -66,50 +67,77 @@ allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
       { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
-           def mCFP = [ "AC3" : "AC3",
-                      "AC3+" : "E-AC3",
-                      "TrueHD" : "TrueHD",
-                      "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
-                      "DTS" : "DTS",
-                      "DTS HD HRA / Core" : "DTS-HD HRA",
-                      "DTS HD MA / Core" : "DTS-HD MA",
-                      "DTS HD X / MA / Core" : "DTS-X",
-                      "FLAC" : "FLAC",
-                      "PCM" : "PCM",
-                      "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
-                      "AAC LC LC" : "AAC-LC",
-                      "AAC LC SBR HE AAC LC": "HE-AAC",
-                      "MLP FBA": "TrueHD"] */
+          def mCFP = [
+            "AC3" : "AC3",
+            "AC3+" : "E-AC3",
+            "TrueHD" : "TrueHD",
+            "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
+            "DTS" : "DTS",
+            "DTS HD HRA / Core" : "DTS-HD HRA",
+            "DTS HD MA / Core" : "DTS-HD MA",
+            "DTS HD X / MA / Core" : "DTS-X",
+            "FLAC" : "FLAC",
+            "PCM" : "PCM",
+            "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
+            "AAC LC LC" : "AAC-LC",
+            "AAC LC SBR HE AAC LC": "HE-AAC"
+          ] */
 
-        // map Codec + Format Profile
+        // audio map, some of these are probably not needed anymore
         def mCFP = [
           "FLAC" : "FLAC",
           "PCM" : "PCM",
-          "MP3": "MP3",
-          "AC-3": "AC-3",
+          "MPEG Audio Layer 3": "MP3",
           "AAC LC": "AAC LC",
+          "AAC LC SBR": "HE-AAC", // HE-AACv1
+          "AAC LC SBR PS": "HE-AACv2",
           "E-AC-3 JOC": "E-AC-3",
+          "DTS ES": "DTS-ES Matrix",
           "DTS ES XXCH": "DTS-ES Discrete",
           "DTS XLL": "DTS-HD MA",
+          /* "DTS XLL X": "DTS\u02D0X", // IPA triangular colon */
+          "DTS XLL X": "DTS-X",
+          "DTS XBR": "DTS-HR",
           "MLP FBA": "TrueHD",
           "MLP FBA 16-ch": "TrueHD"
         ]
         audio.collect { au ->
-          def ac1 = any{ au["CodecID/Hint"] }{au["Format/String"]}{ au["Format"] } // extends _ac_ which strips spaces > "CodecID/Hint", "Format"
-          def ac2 = any{ au["CodecID/String"] }{ au["Codec/String"] }{ au["Codec"] }
-          def acon = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] } // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
-          def atmos = (acon =~ /(?i:atmos)/) ? "Atmos" : null
-          def combined = allOf{ac1}{ac2}.join(" ")
-          def fallback = any{ac1}{ac2}{acon}
+          /* Format seems to be consistently defined and identical to Format/String
+             Format_Profile and Format_AdditionalFeatures instead
+             seem to be usually mutually exclusive
+             Format_Commercial (and _If_Any variant) seem to be defined
+             mainly for Dolby/DTS formats */
+          def _ac = any{allOf{ au["Format"] }{ au["Format_Profile"] }{ au["Format_AdditionalFeatures"] }}{ au["Format_Commercial"] }.join(" ")
+          def _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] } // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
+          /* def atmos = (_aco =~ /(?i:atmos)/) ? "Atmos" : null */
+          def isAtmos = {
+            def _fAtmos = any{audio.FormatCommercial =~ /(?i)atmos/}{false}
+            def _oAtmos = any{audio.NumberOfDynamicObjects}{false}
+            if (_fAtmos || _oAtmos) { return "Atmos" }
+          }
+          /* _channels_ uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
+               compared to _af_ which uses "Channel(s)_Original", "Channel(s)"
+             local _channels uses the same variables as {channels} but calculates
+             the result for each audio stream */
+          def _channels = any{ au["ChannelPositions/String2"] }{ au["Channel(s)_Original"] }{ au["Channel(s)"] }
+          /* _channels can contain no numbers */
+          def ch = _channels =~ /^(?i)object.based$/ ? 'Object Based' :
+                   _channels.tokenize("\\/").take(3)*.toDouble()
+                            .inject(0, { a, b -> a + b }).findAll { it > 0 }.max()
+                            .toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
           def stream = allOf
-            /* _channels_ as it uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
-               compared to _af_ which uses "Channel(s)_Original", "Channel(s)" */
-            { allOf{channels}{au["NumberOfDynamicObjects"] + "obj"}.join("+") }
-            { allOf{ mCFP.get(combined, acon) }{atmos}.join("+") } /* bit risky keeping acon as default */
+            { allOf{ ch }{ au["NumberOfDynamicObjects"] + "obj" }.join("+") }
+            { allOf{ mCFP.get(_ac, _ac) }{isAtmos/* atmos */}.join("+") }
+            /* { allOf{ mCFP.get(combined, _aco) }{atmos}.join("+") } /* bit risky keeping _aco as default */
             { Language.findLanguage(au["Language"]).ISO3.upperInitial() }
             /* _cf_ not being used > "Codec/Extensions", "Format" */
-          return stream
-        }.sort{a, b -> a.first() <=> b.first() }*.join(" ").join(", ") }
+          def ret = [:]
+          /* this is done to retain stream order */
+          ret.id = any{ au["StreamKindId"] }{ au["StreamKindPos"] }{ au["ID"] }
+          ret.data = stream
+          return ret
+        }.toSorted{ it.id }.collect{ it.data }*.join(" ").join(", ") }
+      /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
       /* source */
       { // logo-free release source finder
         def file = new File("/scripts/websources.txt")
