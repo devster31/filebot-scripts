@@ -12,6 +12,8 @@ AnimeLab                                       ANLB
 AOL                                            AOL
 ARD                                            ARD
 BBC iPlayer                                    iP
+Blackpills                                     BKPL
+Boomerang                                      BOOM
 BravoTV                                        BRAV
 Canal+                                         CNLP
 Cartoon Network                                CN
@@ -30,8 +32,10 @@ Crunchy Roll                                   CR
 CSpan                                          CSPN
 CTV                                            CTV
 CuriosityStream                                CUR
+The CW                                         CW
 CWSeed                                         CWS
 Daisuki                                        DSKI
+DC Universe                                    DCU
 Deadhouse Films                                DHF
 Destination America                            DEST
 Digiturk Dilediğin Yerde                       DDY
@@ -50,12 +54,14 @@ Family                                         FAM
 Family Jr                                      FJR
 Food Network                                   FOOD
 Fox                                            FOX
+France.tv                                      FTV
 Freeform                                       FREE
+Funimation                                     FUNI
 FYI Network                                    FYI
 Global                                         GLBL
 GloboSat Play                                  GLOB
 go90                                           GO90
-NHL GameCenter                                 GC
+Google Play                                    PLAY
 Hallmark                                       HLMK
 HBO                                            HBO
 HGTV                                           HGTV
@@ -67,6 +73,8 @@ IFC                                            IFC
 Investigation Discovery                        ID
 iTunes                                         iT
 ITV                                            ITV
+Kanopy                                         KNPY
+Kayo Sports                                    KAYO
 Knowledge Network                              KNOW
 Lifetime                                       LIFE
 Loving Nature                                  LN
@@ -79,12 +87,17 @@ NBC                                            NBC
 Netflix                                        NF
 NFL Now                                        NFLN
 NFL Network                                    NFL
+NHL GameCenter                                 GC
 Nickelodeon                                    NICK
 Norsk Rikskringkasting                         NRK
+Paramount Network                              PMNT
 Pluzz                                          PLUZ
 PBS                                            PBS
 PBS Kids                                       PBSK
 Playstation Network                            PSN
+PokerGo                                        POGO
+Project Alpha                                  PA
+puhutv                                         PUHU
 Rooster Teeth (Staff approval needed)          RSTR
 RTÉ                                            RTE
 SBS (AU)                                       SBS
@@ -101,6 +114,7 @@ SyFy                                           SYFY
 TBS                                            TBS
 TenPlay                                        TEN
 TFOU                                           TFOU
+TIMvision                                      TIMV
 TLC                                            TLC
 Travel Channel                                 TRVL
 TubiTV                                         TUBI
