@@ -1,4 +1,4 @@
-pushover=***REMOVED***:***REMOVED***
-mail=smtp.mailgun.org:587:filebot@mail.dispenser.ovh:filebot@mail.dispenser.ovh:***REMOVED***
+pushover={{ pushover.user }}:{{ pushover.api }}
+mail={{ mailgun.server }}:{{ mailgun.port }}:{{ mailgun.from }}:{{ mailgun.user }}:{{ mailgun.pass }}
 mailto=devster31@gmail.com
 reportError=y
