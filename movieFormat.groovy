@@ -51,13 +51,18 @@ allOf
     {" ($y)"}
     // tags + a few more variants
     { def last = n.tokenize(" ").last()
-      def t = tags
-      t.removeIf { it ==~ /(?i:imax)/ }
+      /* def _tags = (tags != null) ? tags : null */
+      def _tags = call{tags}
+      if (_tags) {
+      	_tags.removeIf { it ==~ /(?i:imax)/ }
+        _tags.removeIf{ a -> _tags.any{ b -> a != b && b.startsWith(a) } }
+      }
+
       specials = { allOf
-                    { t }
-                    { fn.after(/(?i:$last)/).findAll(/(?i:alternate[ ._-]cut|limited)/)
+                    { _tags }
+                    { fn.after(/(?i:$last)/).findAll(/(?i)(alternate|first)[ ._-]cut|limited|hybrid/)
                       *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
-                    { fn.after(/(?i:$last)/).findAll(/(?i:imax).(?i:edition|version)?/)
+                    { fn.after(/(?i:$last)/).findAll(/(?i)imax.?(edition|version)?/)
                       *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")
                       *.replaceAll(/(?i:imax)/, "IMAX") }
                     .flatten().sort() }
