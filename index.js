@@ -13,9 +13,9 @@ log.log = console.info.bind(console)
 const vars = require('./template/vars.json')
 /*
     consider using https://github.com/koblas/sops-decoder-node
-    for now it needs `sops -d template/secrets.json > template/secrets_unencrypted.json`
+    for now it needs `sops -d template/secrets.json > template/clear_secrets.json`
 */
-const secrets = require('./template/secrets_unencrypted.json')
+const secrets = require('./template/clear_secrets.json')
 const dataView = _.merge(vars, secrets)
 log(`dataView is:\n${dataView}`)
 
