@@ -1,0 +1,26 @@
+{
+  "name": "filebot-scripts",
+  "version": "0.1.0",
+  "description": "personalized FileBot scripts",
+  "main": "index.js",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "mustache": "^3.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "node index.js",
+    "clean": "rm -r ./generated/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devster31/filebot-scripts.git"
+  },
+  "author": "Daniele Riccucci",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devster31/filebot-scripts/issues"
+  },
+  "homepage": "https://github.com/devster31/filebot-scripts#readme"
+}
