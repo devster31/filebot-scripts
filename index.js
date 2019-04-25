@@ -2,6 +2,7 @@
 const fs = require('fs')
 const path = require('path')
 
+const _ = require('lodash')
 const mu = require('mustache')
 const debug = require('debug')
 const error = debug('fb:error')
@@ -10,8 +11,12 @@ const log = debug('fb:log')
 log.log = console.info.bind(console)
 
 const vars = require('./template/vars.json')
-const secrets = require('./template/secrets.json')
-const dataView = Object.assign({}, vars, secrets)
+/*
+    consider using https://github.com/koblas/sops-decoder-node
+    for now it needs `sops -d template/secrets.json > template/secrets_unencrypted.json`
+*/
+const secrets = require('./template/secrets_unencrypted.json')
+const dataView = _.merge(vars, secrets)
 log(`dataView is:\n${dataView}`)
 
 let tpls = {}
