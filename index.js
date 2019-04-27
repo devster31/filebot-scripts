@@ -19,7 +19,7 @@ debug('dataView is:\n%O', dataView)
 const tplReg = /.*\.mustache/
 const tplDir = 'templates'
 const parDir = path.join(tplDir, 'partials')
-const genDir = 'generated'
+const distDir = 'dist'
 
 /**
  * Creates a directory or no-op
@@ -106,10 +106,10 @@ async function main() {
 				return _.assign(tpl, { contents: await render(tpl.contents, dataView, partObj) })
 			})
 		)
-		await ensureDir(genDir, { mode: 0o775 })
+		await ensureDir(distDir, { mode: 0o775 })
 		await Promise.all(
 			rendered.map(async tpl => {
-				const outFile = path.resolve(genDir, tpl.name) + '.groovy'
+				const outFile = path.resolve(distDir, tpl.name) + '.groovy'
 				await fs.writeFile(outFile, tpl.contents, { mode: 0o664 })
 				debug('written out %s', path.relative(process.cwd(), outFile))
 			})

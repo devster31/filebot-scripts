@@ -1,5 +1,5 @@
-generated/
 clear_*
+dist/
 
 # Logs
 logs
