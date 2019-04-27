@@ -6,6 +6,6 @@ chmod 664 $file
 
 for lang in "$@" ; do
     filebot -script fn:suball --lang $lang --def maxAgeDays=7 $file
-    subliminal --addict7ed devster31 ***REMOVED*** --opensubtitles devster31 ***REMOVED*** \
+    subliminal --addict7ed $ADDIC7ED_USER $ADDIC7ED_PASS --opensubtitles $OPENSUBS_USER $OPENSUBS_PASS \
         download -l $lang -hi --refiner metadata -p addic7ed -p podnapisi -p shooter -p subscenter -p thesubdb -p tvsubtitles $file
 done
