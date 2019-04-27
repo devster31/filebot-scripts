@@ -72,7 +72,7 @@ def main():
     fb_exec = shutil.which("filebot") or os.getenv("FILEBOT", default="/usr/bin/filebot")
 
     log = logging.getLogger('qbittorrent.postprocess')
-    log.addHandler(logging.FileHandler("{}.log".format(ppr_log)))
+    log.addHandler(logging.FileHandler(f"{ppr_log}.log"))
     log.basicConfig(
         format="{asctime:15} [{name}] - {levelname} - {message}",
         datefmt="%Y-%m-%d %H:%M:%S",
