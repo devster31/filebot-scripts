@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 
 const _ = require('lodash')
@@ -8,112 +8,120 @@ const debug = require('debug')('fb:generate')
 
 const vars = require('./templates/vars.json')
 /*
-    consider using https://github.com/koblas/sops-decoder-node
-    for now it needs `sops -d template/secrets.json > template/clear_secrets.json`
+	Consider using https://github.com/koblas/sops-decoder-node
+	for now it needs `sops -d templates/secrets.json > templates/clear_secrets.json`
 */
 const secrets = require('./templates/clear_secrets.json')
 
 const dataView = _.merge(vars, secrets)
 debug('dataView is:\n%O', dataView)
 
-let tpls = {}
-let partials = {}
+const tplReg = /.*\.mustache/
+const tplDir = 'templates'
+const parDir = path.join(tplDir, 'partials')
+const genDir = 'generated'
 
-function multiLoad(scanDir, pattern, obj) {
-    var re = new RegExp(pattern)
-    fs.readdir(scanDir, { withFileTypes: true }, (err, dirents) => {
-        if (err) {
-            error(err)
-        }
+/**
+ * Creates a directory or no-op
+ * @param {String} dir path to create or ensure
+ * @param {Object|Number} opts options object or mode number
+ * @returns {Promise} no arguments or error
+ */
+async function ensureDir(dir, opts) {
+	if (!opts || typeof opts === 'number') {
+		opts = { mode: opts }
+	}
 
-        dirents
-            .filter(dirent => dirent.isFile())
-            .filter(dirent => re.test(dirent.name) )
-            .forEach(file => {
-                let absPath = path.resolve(scanDir, file.name)
-                log(`loading ${file.name} from ${scanDir}`)
-                read(absPath, obj)
-            })
-    })
+	let { mode } = opts
+
+	if (mode === undefined) {
+		mode = 0o777 & (~process.umask())
+	}
+
+	const p = path.resolve(dir)
+	try {
+		await fs.mkdir(p, mode)
+	} catch (error) {
+		if (error.code !== 'EEXIST') {
+			throw error
+		}
+	}
 }
 
-function read(f, o) {
-    let parsed = path.parse(f)
-    fs.readFile(f, 'utf8', (err, content) => {
-        if (err) {
-            error(err)
-        }
-        let out = {}
-        out[parsed.name] = content
-        Object.assign(o, out)
-    })
+/**
+ * Reads directory and filters results for specific pattern
+ * @param {String} scanDir path to scan
+ * @param {RegExp} pattern pattern to filter for
+ * @return {Promise} containing a Dirent array
+ */
+async function getFiles(scanDir, pattern) {
+	const regex = new RegExp(pattern)
+	const files = await fs.readdir(scanDir, { withFileTypes: true })
+	const filteredFiles = files.filter(dirent => dirent.isFile() && regex.test(dirent.name))
+	const fileContents = Promise.all(
+		filteredFiles.map(async dirent => {
+			const fBase = dirent.name
+			const fName = path.parse(fBase).name
+			const absPath = path.resolve(scanDir, fBase)
+			debug('loading %s from %s', path.relative(scanDir, absPath), scanDir)
+			return {
+				name: fName,
+				contents: await fs.readFile(absPath, 'utf8')
+			}
+		})
+	)
+	return fileContents
 }
 
-function ensureDir(dir, opts, callback, made) {
-    if (typeof opts === 'function') {
-        callback = opts
-        opts = {}
-    } else if (!opts || typeof opts !== 'object') {
-        opts = { mode: opts }
-    }
-
-    let mode = opts.mode
-
-    if (mode === undefined) {
-        mode = 0o777 & (~process.umask())
-    }
-    if (!made) made = null
-
-    callback = callback || function () {}
-
-    p = path.resolve(dir)
-    fs.mkdir(p, mode, err => {
-        if (!err) {
-            made = made || p
-            return callback(null, made)
-        }
-        switch (err.code) {
-            case 'ENOENT':
-                if (path.dirname(p) === p) return callback(err)
-                ensureDir(path.dirname(p), opts, (err, made) => {
-                    if (err) callback(err, made)
-                    else ensureDir(p, opts, callback, made)
-                })
-                break
-
-            // In the case of any other error, just see if there's a dir
-            // there already.  If so, then hooray!  If not, then something
-            // is borked.
-            default:
-                fs.stat(p, (er2, stat) => {
-                    // if the stat fails, then that's super weird.
-                    // let the original error be the failure reason.
-                    if (er2 || !stat.isDirectory()) callback(err, made)
-                    else callback(null, made)
-                })
-                break
-        }
-    })
+/**
+ * Renders the template asyncronously
+ * @param {String} tpl template string
+ * @param {Object} data JSON data for template
+ * @param {Object} parts partials
+ * @return {Promise} containing rendered string
+ */
+async function render(tpl, data, parts) {
+	return new Promise((resolve, reject) => {
+		try {
+			const rendered = mu.render(tpl, data, parts)
+			resolve(rendered)
+		} catch (error) {
+			reject(error)
+		}
+	})
 }
 
-function renderAndWrite(outDir, obj) {
-    Object.keys(obj).forEach( key => {
-        let outPath = path.resolve(outDir, key + '.groovy')
-        let outData = mu.render(obj[key], dataView, partials)
-        log(`templating of ${path.parse(outPath).base} successful`)
-        fs.writeFile(outPath, outData, { mode: 0o664 }, (err) => {
-            if (err) {
-                error(err)
-            }
-            log(`writing of template ${key + '.groovy'} successful`)
-        })
-    })
+/**
+ * Main function
+ * @return {VoidFunction} no data returned
+ */
+async function main() {
+	try {
+		const templates = getFiles(tplDir, tplReg)
+		const partials = getFiles(parDir, tplReg)
+		const loaded = _.zipObject(['templates', 'partials'], await Promise.all([templates, partials]))
+		const partObj = loaded.partials.reduce((acc, cur/* , idx, src */) => ({ ...acc, [cur.name]: cur.contents }), {})
+		const rendered = await Promise.all(
+			loaded.templates.map(async tpl => {
+				return _.assign(tpl, { contents: await render(tpl.contents, dataView, partObj) })
+			})
+		)
+		await ensureDir(genDir, { mode: 0o775 })
+		await Promise.all(
+			rendered.map(async tpl => {
+				const outFile = path.resolve(genDir, tpl.name) + '.groovy'
+				await fs.writeFile(outFile, tpl.contents, { mode: 0o664 })
+				debug('written out %s', path.relative(process.cwd(), outFile))
+			})
+		)
+	} catch (error) {
+		debug(error)
+	}
 }
 
-log('loading templates')
-multiLoad('./template', ".*\.mustache", tpls)
-log('loading partials')
-multiLoad('./template/partials', ".*\.mustache", partials)
-log(`ensuring output directory`)
-ensureDir('./generated', { mode: 0o775 } )
-renderAndWrite('./generated', tpls)
+main().catch(error => {
+	debug(error)
+	setTimeout(() => {
+		process.exit(-1)
+	}, 100)
+})
