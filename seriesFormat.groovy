@@ -102,9 +102,9 @@ allOf
               return ret
             }.toSorted{ it.id }.collect{ it.data }*.join(" ").join(", ") }
             /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
-            // { any{source}{ if (fn.match(/web/)) { return "WEB-DL" }} }
-            { // logo-free release source finder
-              def file = new File("/scripts/websources.txt")
+            /* logo-free release source finder + source */
+            { def fileURL = new URL('file:///scripts/websources.txt')
+              def file = new File(fileURL.toURI())
               def websources = file.exists() ? readLines(file).join("|") : null
               def isWeb = (source ==~ /WEB.*/)
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
