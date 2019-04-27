@@ -8,11 +8,23 @@
     "lodash": "^4.17.11",
     "mustache": "^3.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "xo": "^0.24.0"
+  },
   "scripts": {
     "build": "node index.js",
-    "clean": "rm -r ./generated/",
+    "clean": "rm -r generated/",
+    "lint": "xo",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "xo": {
+    "semicolon": false,
+    "rules": {
+      "object-curly-spacing": [
+        "warn",
+        "always"
+      ]
+    }
   },
   "repository": {
     "type": "git",
