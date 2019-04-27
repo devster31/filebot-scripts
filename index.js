@@ -10,12 +10,13 @@ const log = debug('fb:log')
 // set this namespace to log via console.log/info
 log.log = console.info.bind(console)
 
-const vars = require('./template/vars.json')
+const vars = require('./templates/vars.json')
 /*
     consider using https://github.com/koblas/sops-decoder-node
     for now it needs `sops -d template/secrets.json > template/clear_secrets.json`
 */
-const secrets = require('./template/clear_secrets.json')
+const secrets = require('./templates/clear_secrets.json')
+
 const dataView = _.merge(vars, secrets)
 log(`dataView is:\n${dataView}`)
 
