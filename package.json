@@ -13,7 +13,8 @@
   },
   "scripts": {
     "build": "node index.js",
-    "clean": "rm -r generated/",
+    "build-dbg": "DEBUG=* node index.js",
+    "clean": "rm -r dist",
     "lint": "xo",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
