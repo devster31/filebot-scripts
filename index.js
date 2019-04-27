@@ -11,7 +11,16 @@ const vars = require('./templates/vars.json')
 	Consider using https://github.com/koblas/sops-decoder-node
 	for now it needs `sops -d templates/secrets.json > templates/clear_secrets.json`
 */
-const secrets = require('./templates/clear_secrets.json')
+let secrets = {}
+try {
+	secrets = require('./templates/clear_secrets.json')
+} catch (error) {
+	if (error.code !== 'MODULE_NOT_FOUND') {
+		throw error
+	}
+
+	debug('no secrets file available, skipping...')
+}
 
 const dataView = _.merge(vars, secrets)
 debug('dataView is:\n%O', dataView)
