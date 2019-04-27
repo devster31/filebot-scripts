@@ -50,10 +50,13 @@ async function ensureDir(dir, opts) {
 	const p = path.resolve(dir)
 	try {
 		await fs.mkdir(p, mode)
+		debug('directory %s created with mode %o', path.relative(process.cwd(), p), mode)
 	} catch (error) {
 		if (error.code !== 'EEXIST') {
 			throw error
 		}
+
+		debug('directory %s already exists', path.relative(process.cwd(), p))
 	}
 }
 
