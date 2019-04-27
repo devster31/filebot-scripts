@@ -4,11 +4,7 @@ const path = require('path')
 
 const _ = require('lodash')
 const mu = require('mustache')
-const debug = require('debug')
-const error = debug('fb:error')
-const log = debug('fb:log')
-// set this namespace to log via console.log/info
-log.log = console.info.bind(console)
+const debug = require('debug')('fb:generate')
 
 const vars = require('./templates/vars.json')
 /*
@@ -18,7 +14,7 @@ const vars = require('./templates/vars.json')
 const secrets = require('./templates/clear_secrets.json')
 
 const dataView = _.merge(vars, secrets)
-log(`dataView is:\n${dataView}`)
+debug('dataView is:\n%O', dataView)
 
 let tpls = {}
 let partials = {}
