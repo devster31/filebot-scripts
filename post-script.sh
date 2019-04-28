@@ -1,6 +1,5 @@
 #!/bin/bash -u
 
-MEDUSA_API_KEY=***REMOVED***
 file=$1 # {f}
 location=$2 # {f.dir.dir}
 database=${3} # {info.DataBase}
