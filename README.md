@@ -22,8 +22,9 @@ The build script expects a directory tree like the following:
 │   └── vars.json
 └── yarn.lock
 ```
-with template files ending in `.mustache` contained in `templates` and
+with template files (including desired extension) ending in `.mustache`
+contained in `templates` (e.g. `movieFormat.groovy.mustache`) and
 partials ending in `.mustache` and contained in `templates/partials`.
 The script also requires a `vars.json` file and optionally a `clear_secrets.json`,
-both contained in `templates`.
+both contained in `templates`. These get merged at runtime.
 The scripts outputs generated files into `dist`.

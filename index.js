@@ -25,7 +25,7 @@ try {
 const dataView = _.merge(vars, secrets)
 debug('dataView is:\n%O', dataView)
 
-const tplReg = /.*\.mustache/
+const tplExt = '.mustache'
 const tplDir = 'templates'
 const parDir = path.join(tplDir, 'partials')
 const distDir = 'dist'
@@ -63,13 +63,15 @@ async function ensureDir(dir, opts) {
 /**
  * Reads directory and filters results for specific pattern
  * @param {String} scanDir path to scan
- * @param {RegExp} pattern pattern to filter for
+ * @param {RegExp} ext file extension
  * @return {Promise} containing a Dirent array
  */
-async function getFiles(scanDir, pattern) {
-	const regex = new RegExp(pattern)
+async function getFiles (scanDir, ext) {
 	const files = await fs.readdir(scanDir, { withFileTypes: true })
-	const filteredFiles = files.filter(dirent => dirent.isFile() && regex.test(dirent.name))
+	const filteredFiles = files.filter(dirent =>
+		dirent.isFile() &&
+		(path.extname(dirent.name) === ext)
+	)
 	const fileContents = Promise.all(
 		filteredFiles.map(async dirent => {
 			const fBase = dirent.name
@@ -109,8 +111,8 @@ async function render(tpl, data, parts) {
  */
 async function main() {
 	try {
-		const templates = getFiles(tplDir, tplReg)
-		const partials = getFiles(parDir, tplReg)
+		const templates = getFiles(tplDir,  tplExt)
+		const partials = getFiles(parDir,  tplExt)
 		const loaded = _.zipObject(['templates', 'partials'], await Promise.all([templates, partials]))
 		const partObj = loaded.partials.reduce((acc, cur/* , idx, src */) => ({ ...acc, [cur.name]: cur.contents }), {})
 		const rendered = await Promise.all(
@@ -121,7 +123,7 @@ async function main() {
 		await ensureDir(distDir, { mode: 0o775 })
 		await Promise.all(
 			rendered.map(async tpl => {
-				const outFile = path.resolve(distDir, tpl.name) + '.groovy'
+				const outFile = path.resolve(distDir, tpl.name)
 				await fs.writeFile(outFile, tpl.contents, { mode: 0o664 })
 				debug('written out %s', path.relative(process.cwd(), outFile))
 			})
