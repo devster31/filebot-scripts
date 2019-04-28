@@ -32,28 +32,32 @@ const distDir = 'dist'
 
 /**
  * Creates a directory or no-op
+ * TODO: make it possible to recurse and ensure arbitrary directories
  * @param {String} dir path to create or ensure
  * @param {Object|Number} opts options object or mode number
- * @returns {Promise} no arguments or error
+ * @returns {Promise} resolved with no arguments or rejected with error
  */
 async function ensureDir (dir, opts) {
 	if (!opts || typeof opts === 'number') {
-		opts = { mode: opts }
+		opts = {
+			recursive: false,
+			mode: opts
+		}
 	}
 
 	let { mode } = opts
 
 	if (mode === undefined) {
-		mode = 0o777 & (~process.umask())
+		opts.mode = 0o777 & (~process.umask())
 	}
 
 	const p = path.resolve(dir)
 	try {
-		await fs.mkdir(p, mode)
+		await fs.mkdir(p, opts)
 		debug(
-			'directory %s created with mode %o',
+			'directory %s created with %o',
 			path.relative(process.cwd(), p),
-			mode
+			opts
 		)
 	} catch (error) {
 		if (error.code !== 'EEXIST') {
