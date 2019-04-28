@@ -55,18 +55,22 @@ allOf
       def _tags = call{tags}
       if (_tags) {
       	_tags.removeIf { it ==~ /(?i:imax)/ }
-        _tags.removeIf{ a -> _tags.any{ b -> a != b && b.startsWith(a) } }
       }
 
-      specials = { allOf
-                    { _tags }
-                    { fn.after(/(?i:$last)/).findAll(/(?i)(alternate|first)[ ._-]cut|limited|hybrid/)
-                      *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
-                    { fn.after(/(?i:$last)/).findAll(/(?i)imax.?(edition|version)?/)
-                      *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")
-                      *.replaceAll(/(?i:imax)/, "IMAX") }
-                    .flatten().sort() }
-      specials().size() > 0 ? specials().join(", ").replaceAll(/^/, " - ") : "" }
+      specials = allOf
+                  { _tags }
+                  { fn.after(/(?i:$last)/).findAll(/(?i)(alternate|first)[ ._-]cut|limited|hybrid/)
+                    *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
+                  { fn.after(/(?i:$last)/).findAll(/(?i)imax.?(edition|version)?/)
+                    *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")
+                    *.replaceAll(/(?i:imax)/, "IMAX") }
+                  { if (!!(fn.after(/(?i:$last)/) =~ /\WDC\W/)) "Directors Cut" }
+                  .flatten().sort()
+      if (specials.size() > 0) {
+        specials.removeIf{ a ->
+          _tags.any{ b ->
+            a != b && (b.startsWith(a) || b.endsWith(a)) } }
+        specials.unique().join(", ").replaceAll(/^/, " - ") } }
     {" PT $pi"}
     {" ["}
     { allOf
