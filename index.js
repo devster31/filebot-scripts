@@ -19,7 +19,7 @@ try {
 		throw error
 	}
 
-	debug('no secrets file available, skipping...')
+	debug('no secrets file available, moving on...')
 }
 
 const dataView = _.merge(vars, secrets)
@@ -36,7 +36,7 @@ const distDir = 'dist'
  * @param {Object|Number} opts options object or mode number
  * @returns {Promise} no arguments or error
  */
-async function ensureDir(dir, opts) {
+async function ensureDir (dir, opts) {
 	if (!opts || typeof opts === 'number') {
 		opts = { mode: opts }
 	}
@@ -50,13 +50,20 @@ async function ensureDir(dir, opts) {
 	const p = path.resolve(dir)
 	try {
 		await fs.mkdir(p, mode)
-		debug('directory %s created with mode %o', path.relative(process.cwd(), p), mode)
+		debug(
+			'directory %s created with mode %o',
+			path.relative(process.cwd(), p),
+			mode
+		)
 	} catch (error) {
 		if (error.code !== 'EEXIST') {
 			throw error
 		}
 
-		debug('directory %s already exists', path.relative(process.cwd(), p))
+		debug(
+			'directory %s already exists, moving on...',
+			path.relative(process.cwd(), p)
+		)
 	}
 }
 
@@ -77,7 +84,11 @@ async function getFiles (scanDir, ext) {
 			const fBase = dirent.name
 			const fName = path.parse(fBase).name
 			const absPath = path.resolve(scanDir, fBase)
-			debug('loading %s from %s', path.relative(scanDir, absPath), scanDir)
+			debug(
+				'loading %s from %s',
+				path.relative(scanDir, absPath),
+				scanDir
+			)
 			return {
 				name: fName,
 				contents: await fs.readFile(absPath, 'utf8')
@@ -94,7 +105,7 @@ async function getFiles (scanDir, ext) {
  * @param {Object} parts partials
  * @return {Promise} containing rendered string
  */
-async function render(tpl, data, parts) {
+async function render (tpl, data, parts) {
 	return new Promise((resolve, reject) => {
 		try {
 			const rendered = mu.render(tpl, data, parts)
@@ -109,15 +120,26 @@ async function render(tpl, data, parts) {
  * Main function
  * @return {VoidFunction} no data returned
  */
-async function main() {
+async function main () {
 	try {
 		const templates = getFiles(tplDir,  tplExt)
 		const partials = getFiles(parDir,  tplExt)
-		const loaded = _.zipObject(['templates', 'partials'], await Promise.all([templates, partials]))
-		const partObj = loaded.partials.reduce((acc, cur/* , idx, src */) => ({ ...acc, [cur.name]: cur.contents }), {})
+		const loaded = _.zipObject(
+			['templates', 'partials'],
+			await Promise.all([templates, partials])
+		)
+		const partObj = loaded.partials.reduce(
+			(acc, cur/* , idx, src */) => ({
+				...acc,
+				[cur.name]: cur.contents
+			}),
+			{}
+		)
 		const rendered = await Promise.all(
 			loaded.templates.map(async tpl => {
-				return _.assign(tpl, { contents: await render(tpl.contents, dataView, partObj) })
+				return _.assign(tpl, {
+					contents: await render(tpl.contents, dataView, partObj)
+				})
 			})
 		)
 		await ensureDir(distDir, { mode: 0o775 })
