@@ -122,8 +122,8 @@ async function render (tpl, data, parts) {
  */
 async function main () {
 	try {
-		const templates = getFiles(tplDir,  tplExt)
-		const partials = getFiles(parDir,  tplExt)
+		const templates = getFiles(tplDir, tplExt)
+		const partials = getFiles(parDir, tplExt)
 		const loaded = _.zipObject(
 			['templates', 'partials'],
 			await Promise.all([templates, partials])
