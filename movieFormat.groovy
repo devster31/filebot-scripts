@@ -1,6 +1,5 @@
 {
   import net.filebot.Language
-  import java.math.RoundingMode
   import groovy.json.JsonSlurper
   import groovy.json.JsonOutput
 
@@ -77,7 +76,8 @@ allOf
     { allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
-      { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
+      { import java.math.RoundingMode
+        /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
         def mCFP = [
           "AC3" : "AC3",
           "AC3+" : "E-AC3",
@@ -141,7 +141,7 @@ allOf
             if (_fAtmos || _oAtmos) { return "Atmos" }
           }
           /* _channels_ uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
-               compared to _af_ which uses "Channel(s)_Original", "Channel(s)"
+             compared to _af_ which uses "Channel(s)_Original", "Channel(s)"
              local _channels uses the same variables as {channels} but calculates
              the result for each audio stream */
           String    _channels = any
@@ -151,8 +151,8 @@ allOf
           String    _ch
           /* _channels can contain no numbers */
           Object    splitCh = _channels =~ /^(?i)object.based$/ ? "Object Based" :
-                              _channels.tokenize("\\/").take(3)
-                              // _channels.tokenize("\\/\\.") // possibly not usable because of 3/2/0.2.1/3/2/0.1 files
+                              _channels.tokenize("\\/\\.")
+                              /* the below may be needed for 3/2/0.2.1/3/2/0.1 files */
                               // _channels.tokenize("\\/").take(3)*.tokenize("\\.")
                               //          .flatten()*.toInteger()
           switch (splitCh) {
@@ -161,19 +161,22 @@ allOf
               _ch = allOf{ splitCh }{ _chDeep + "ch" }.join(" ")
               break
 
-            case { it.size > 1 && !it.last().isDouble() }:
-              def wide = splitCh.last().tokenize(".")
-              def main = splitCh.take(2).plus(wide.take(2))*.toDouble()
-                                .inject(0, { a, b -> a + b }).findAll { it > 0 }.max()
-              def sub = ("0." + wide.last()).toDouble()
+            case { it.size > 4 }:
+              def wide = splitCh.takeRight(1)
+              Double main = splitCh.take(4)*.toDouble().inject(0, { a, b -> a + b })
+              Double sub = Double.parseDouble("0." + wide.last())
               _ch = (main + sub).toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
               break
 
+            case { it.size > 1 }:
+              /* original logic is _mostly_ unchanged if format is like 3/2/0.1 */
+              Double sub = Double.parseDouble(splitCh.takeRight(2).join("."))
+              _ch = splitCh.take(2)*.toDouble().plus(sub).inject(0, { a, b -> a + b })
+                           .toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+              break
+
             default:
-              /* original logic is unchanged if format is like 3/2/0.1 */
-              _ch = splitCh*.toDouble().inject(0, { a, b -> a + b })
-                            .findAll { it > 0 }.max().toBigDecimal()
-                            .setScale(1, RoundingMode.HALF_UP).toString()
+              _ch = splitCh.first().toDouble()
           }
 
           def stream = allOf
