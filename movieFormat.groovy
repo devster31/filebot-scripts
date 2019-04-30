@@ -1,4 +1,5 @@
-{ import net.filebot.Language
+{
+  import net.filebot.Language
   import java.math.RoundingMode
   import groovy.json.JsonSlurper
   import groovy.json.JsonOutput
@@ -147,9 +148,9 @@ allOf
           ret.data = stream
           return ret
         }.toSorted{ it.id }.collect{ it.data }*.join(" ").join(", ") }
-      /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
+        /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
       /* logo-free release source finder + source */
-      { def fileURL = new URL('file:///scripts/websources.txt')
+      { def fileURL = new URL("file:///scripts/websources.txt")
         def file = new File(fileURL.toURI())
         def websources = file.exists() ? readLines(file).join("|") : null
         def isWeb = (source ==~ /WEB.*/)

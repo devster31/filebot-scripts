@@ -1,4 +1,5 @@
-{ import net.filebot.Language
+{
+  import net.filebot.Language
   import java.math.RoundingMode
 
   def norm = { it.replaceAll(/[`´‘’ʻ""“”]/, "'")
