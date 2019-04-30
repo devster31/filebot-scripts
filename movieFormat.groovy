@@ -78,21 +78,21 @@ allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
       { /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
-          def mCFP = [
-            "AC3" : "AC3",
-            "AC3+" : "E-AC3",
-            "TrueHD" : "TrueHD",
-            "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
-            "DTS" : "DTS",
-            "DTS HD HRA / Core" : "DTS-HD HRA",
-            "DTS HD MA / Core" : "DTS-HD MA",
-            "DTS HD X / MA / Core" : "DTS-X",
-            "FLAC" : "FLAC",
-            "PCM" : "PCM",
-            "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
-            "AAC LC LC" : "AAC-LC",
-            "AAC LC SBR HE AAC LC": "HE-AAC"
-          ] */
+        def mCFP = [
+          "AC3" : "AC3",
+          "AC3+" : "E-AC3",
+          "TrueHD" : "TrueHD",
+          "TrueHD TrueHD+Atmos / TrueHD" : "TrueHD ATMOS",
+          "DTS" : "DTS",
+          "DTS HD HRA / Core" : "DTS-HD HRA",
+          "DTS HD MA / Core" : "DTS-HD MA",
+          "DTS HD X / MA / Core" : "DTS-X",
+          "FLAC" : "FLAC",
+          "PCM" : "PCM",
+          "AC3+ E AC 3+Atmos / E AC 3": "E-AC3+Atmos",
+          "AAC LC LC" : "AAC-LC",
+          "AAC LC SBR HE AAC LC": "HE-AAC"
+        ] */
 
         // audio map, some of these are probably not needed anymore
         def mCFP = [
@@ -102,24 +102,38 @@ allOf
           "AAC LC": "AAC LC",
           "AAC LC SBR": "HE-AAC", // HE-AACv1
           "AAC LC SBR PS": "HE-AACv2",
-          "E-AC-3 JOC": "E-AC-3",
+          "AC-3 Dep" : "E-AC-3+Dep",
+          "E-AC-3 Dep" : "E-AC-3+Dep",
+          "E-AC-3 JOC": "E-AC-3 JOC",
+          "DTS XBR": "DTS-HD HRA", // needs review
           "DTS ES": "DTS-ES Matrix",
+          "DTS ES XBR" : "DTS-HD HRA",
+          "DTS ES XXCH XBR" : "DTS-HD HRA", // needs review
           "DTS ES XXCH": "DTS-ES Discrete",
+          "DTS ES XXCH XLL" : "DTS-HD MA", // needs review
           "DTS XLL": "DTS-HD MA",
           /* "DTS XLL X": "DTS\u02D0X", // IPA triangular colon */
           "DTS XLL X": "DTS-X",
-          "DTS XBR": "DTS-HR",
           "MLP FBA": "TrueHD",
           "MLP FBA 16-ch": "TrueHD"
+          "DTS 96/24" : "DTS 96-24", // needs review
         ]
+
         audio.collect { au ->
           /* Format seems to be consistently defined and identical to Format/String
              Format_Profile and Format_AdditionalFeatures instead
              seem to be usually mutually exclusive
              Format_Commercial (and _If_Any variant) seem to be defined
              mainly for Dolby/DTS formats */
-          def _ac = any{allOf{ au["Format"] }{ au["Format_Profile"] }{ au["Format_AdditionalFeatures"] }}{ au["Format_Commercial"] }.join(" ")
-          def _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] } // _aco_ uses "Codec_Profile", "Format_Profile", "Format_Commercial"
+          def _ac = any
+                      { allOf
+                        { au["Format"] }
+                        { au["Format_Profile"] }
+                        { au["Format_AdditionalFeatures"] }
+                        .join(" ") }
+                      { au["Format_Commercial"] }
+          /* original _aco_ binding uses "Codec_Profile", "Format_Profile", "Format_Commercial" */
+          def _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
           /* def atmos = (_aco =~ /(?i:atmos)/) ? "Atmos" : null */
           def isAtmos = {
             def _fAtmos = any{audio.FormatCommercial =~ /(?i)atmos/}{false}
@@ -130,14 +144,40 @@ allOf
                compared to _af_ which uses "Channel(s)_Original", "Channel(s)"
              local _channels uses the same variables as {channels} but calculates
              the result for each audio stream */
-          def _channels = any{ au["ChannelPositions/String2"] }{ au["Channel(s)_Original"] }{ au["Channel(s)"] }
+          String    _channels = any
+                                  { au["ChannelPositions/String2"] }
+                                  { au["Channel(s)_Original"] }
+                                  { au["Channel(s)"] }
+          String    _ch
           /* _channels can contain no numbers */
-          def ch = _channels =~ /^(?i)object.based$/ ? 'Object Based' :
-                   _channels.tokenize("\\/").take(3)*.toDouble()
-                            .inject(0, { a, b -> a + b }).findAll { it > 0 }.max()
-                            .toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+          Object    splitCh = _channels =~ /^(?i)object.based$/ ? "Object Based" :
+                              _channels.tokenize("\\/").take(3)
+                              // _channels.tokenize("\\/\\.") // possibly not usable because of 3/2/0.2.1/3/2/0.1 files
+                              // _channels.tokenize("\\/").take(3)*.tokenize("\\.")
+                              //          .flatten()*.toInteger()
+          switch (splitCh) {
+            case { it instanceof String }:
+              def _chDeep = any{ au["Channel(s)"] }{ au["Channel(s)/String"].replaceAll("channels", "") }
+              _ch = allOf{ splitCh }{ _chDeep + "ch" }.join(" ")
+              break
+
+            case { it.size > 1 && !it.last().isDouble() }:
+              def wide = splitCh.last().tokenize(".")
+              def main = splitCh.take(2).plus(wide.take(2))*.toDouble()
+                                .inject(0, { a, b -> a + b }).findAll { it > 0 }.max()
+              def sub = ("0." + wide.last()).toDouble()
+              _ch = (main + sub).toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+              break
+
+            default:
+              /* original logic is unchanged if format is like 3/2/0.1 */
+              _ch = splitCh*.toDouble().inject(0, { a, b -> a + b })
+                            .findAll { it > 0 }.max().toBigDecimal()
+                            .setScale(1, RoundingMode.HALF_UP).toString()
+          }
+
           def stream = allOf
-            { allOf{ ch }{ au["NumberOfDynamicObjects"] + "obj" }.join("+") }
+            { allOf{ _ch }{ au["NumberOfDynamicObjects"] + "obj" }.join("+") }
             { allOf{ mCFP.get(_ac, _ac) }{isAtmos/* atmos */}.join("+") }
             /* { allOf{ mCFP.get(combined, _aco) }{atmos}.join("+") } /* bit risky keeping _aco as default */
             { Language.findLanguage(au["Language"]).ISO3.upperInitial() }
