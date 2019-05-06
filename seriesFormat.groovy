@@ -79,7 +79,7 @@ allOf
                  seem to be usually mutually exclusive
                  Format_Commercial (and _If_Any variant) seem to be defined
                  mainly for Dolby/DTS formats */
-              def _ac = any
+              String _ac = any
                           { allOf
                             { au["Format"] }
                             { au["Format_Profile"] }
@@ -87,9 +87,9 @@ allOf
                             .join(" ") }
                           { au["Format_Commercial"] }
               /* original _aco_ binding uses "Codec_Profile", "Format_Profile", "Format_Commercial" */
-              def _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
+              String _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
               /* def atmos = (_aco =~ /(?i:atmos)/) ? "Atmos" : null */
-              def isAtmos = {
+              String isAtmos = {
                 def _fAtmos = any{audio.FormatCommercial =~ /(?i)atmos/}{false}
                 def _oAtmos = any{audio.NumberOfDynamicObjects}{false}
                 if (_fAtmos || _oAtmos) { return "Atmos" }
