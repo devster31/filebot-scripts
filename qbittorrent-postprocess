@@ -335,7 +335,9 @@ then
 fi
 
 # PAUSE the torrent before processing
-http ":$WEBUI_PORT/api/v2/torrents/pause" hashes=="$_arg_qb_hash"
+set -x
+http --pretty=format --headers --ignore-stdin ":$WEBUI_PORT/api/v2/torrents/pause" hashes=="$_arg_qb_hash"
+set -x
 
 FB=("$FILEBOT" -script fn:amc --action keeplink --output "$MEDIA_OUTPUT" --conflict skip \
 --filter \''!readLines('\""$SCRIPTS"'/exludes.txt'\"').contains(n)'\' \
@@ -352,6 +354,8 @@ log "${FB[@]}"
 "${FB[@]}"
 
 # RESTART the torrent after processing
-http ":$WEBUI_PORT/api/v2/torrents/resume" hashes=="$_arg_qb_hash"
+set -x
+http --pretty=format --headers --ignore-stdin ":$WEBUI_PORT/api/v2/torrents/resume" hashes=="$_arg_qb_hash"
+set +x
 
 # ] <-- needed because of Argbash
