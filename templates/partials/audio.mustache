@@ -79,10 +79,12 @@
                               /* the below may be needed for 3/2/0.2.1/3/2/0.1 files */
                               // _channels.tokenize("\\/").take(3)*.tokenize("\\.")
                               //          .flatten()*.toInteger()
+
+          String    chSimple = any{ au["Channel(s)"] }{ au["Channel(s)/String"].replaceAll("channels", "") }
+
           switch (splitCh) {
             case { it instanceof String }:
-              def _chDeep = any{ au["Channel(s)"] }{ au["Channel(s)/String"].replaceAll("channels", "") }
-              _ch = allOf{ splitCh }{ _chDeep + "ch" }.join(" ")
+              _ch = allOf{ splitCh }{ chSimple + "ch" }.join(" ")
               break
 
             case { it.size > 4 }:
