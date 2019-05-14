@@ -85,7 +85,7 @@ allOf
                  mainly for Dolby/DTS formats */
               String _ac = any
                           { allOf
-                            { au["Format"] }
+                            { any{ au["Format/String"] }{ au["Format"] } }
                             { au["Format_Profile"] }
                             { au["Format_AdditionalFeatures"] }
                             .join(" ") }
