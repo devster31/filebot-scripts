@@ -96,27 +96,29 @@ allOf
 
         // audio map, some of these are probably not needed anymore
         def mCFP = [
-          "FLAC" : "FLAC",
-          "PCM" : "PCM",
+          "FLAC": "FLAC",
+          "PCM": "PCM",
           "MPEG Audio Layer 3": "MP3",
           "AAC LC": "AAC LC",
           "AAC LC SBR": "HE-AAC", // HE-AACv1
           "AAC LC SBR PS": "HE-AACv2",
-          "AC-3 Dep" : "E-AC-3+Dep",
-          "E-AC-3 Dep" : "E-AC-3+Dep",
+          "AC-3 Dep": "E-AC-3+Dep",
+          "AC-3 Blu-ray Disc Dep": "E-AC-3+Dep",
+          "E-AC-3 Blu-ray Disc Dep": "E-AC-3+Dep",
+          "E-AC-3 Dep": "E-AC-3+Dep",
           "E-AC-3 JOC": "E-AC-3 JOC",
           "DTS XBR": "DTS-HD HRA", // needs review
           "DTS ES": "DTS-ES Matrix",
-          "DTS ES XBR" : "DTS-HD HRA",
-          "DTS ES XXCH XBR" : "DTS-HD HRA", // needs review
+          "DTS ES XBR": "DTS-HD HRA",
+          "DTS ES XXCH XBR": "DTS-HD HRA", // needs review
           "DTS ES XXCH": "DTS-ES Discrete",
-          "DTS ES XXCH XLL" : "DTS-HD MA", // needs review
+          "DTS ES XXCH XLL": "DTS-HD MA", // needs review
           "DTS XLL": "DTS-HD MA",
           /* "DTS XLL X": "DTS\u02D0X", // IPA triangular colon */
           "DTS XLL X": "DTS-X",
           "MLP FBA": "TrueHD",
-          "MLP FBA 16-ch": "TrueHD"
-          "DTS 96/24" : "DTS 96-24", // needs review
+          "MLP FBA 16-ch": "TrueHD",
+          "DTS 96/24": "DTS 96-24", // needs review
         ]
 
         audio.collect { au ->
