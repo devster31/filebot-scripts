@@ -45,7 +45,7 @@ async function ensureDir (dir, opts) {
 		}
 	}
 
-	let { mode } = opts
+	const { mode } = opts
 
 	if (mode === undefined) {
 		opts.mode = 0o777 & (~process.umask())
