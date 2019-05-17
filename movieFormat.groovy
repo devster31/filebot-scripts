@@ -1,5 +1,4 @@
 {
-  import net.filebot.Language
   import groovy.json.JsonSlurper
   import groovy.json.JsonOutput
 
@@ -187,7 +186,8 @@ allOf
             { allOf{ _ch }{ au["NumberOfDynamicObjects"] + "obj" }.join("+") }
             { allOf{ mCFP.get(_ac, _ac) }{isAtmos/* atmos */}.join("+") }
             /* { allOf{ mCFP.get(combined, _aco) }{atmos}.join("+") } /* bit risky keeping _aco as default */
-            { Language.findLanguage(au["Language"]).ISO3.upperInitial() }
+            { def _lang = any{ au["Language"] }{ video.first()["Language"] }
+              net.filebot.Language.findLanguage(_lang).ISO3.upperInitial() }
             /* _cf_ not being used > "Codec/Extensions", "Format" */
           def ret = [:]
           /* this is done to retain stream order */
