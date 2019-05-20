@@ -75,7 +75,7 @@ allOf
     { allOf
       // Video stream
       { allOf{vf}{vc}.join(" ") }
-      { import java.math.RoundingMode
+      {
         /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
         def mCFP = [
           "AC3" : "AC3",
@@ -168,14 +168,14 @@ allOf
               def wide = splitCh.takeRight(1)
               Double main = splitCh.take(4)*.toDouble().inject(0, { a, b -> a + b })
               Double sub = Double.parseDouble("0." + wide.last())
-              _ch = (main + sub).toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+              _ch = (main + sub).toBigDecimal().setScale(1, java.math.RoundingMode.HALF_UP).toString()
               break
 
             case { it.size > 1 }:
               /* original logic is _mostly_ unchanged if format is like 3/2/0.1 */
               Double sub = Double.parseDouble(splitCh.takeRight(2).join("."))
               _ch = splitCh.take(2)*.toDouble().plus(sub).inject(0, { a, b -> a + b })
-                           .toBigDecimal().setScale(1, RoundingMode.HALF_UP).toString()
+                           .toBigDecimal().setScale(1, java.math.RoundingMode.HALF_UP).toString()
               break
 
             default:
