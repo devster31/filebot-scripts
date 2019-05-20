@@ -136,11 +136,9 @@ allOf
           /* original _aco_ binding uses "Codec_Profile", "Format_Profile", "Format_Commercial" */
           String _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
           /* def atmos = (_aco =~ /(?i:atmos)/) ? "Atmos" : null */
-          String isAtmos = {
-            def _fAtmos = any{ audio.FormatCommercial =~ /(?i)atmos/ }{ false }
-            def _oAtmos = any{ audio.NumberOfDynamicObjects }{ false }
-            if (_fAtmos || _oAtmos) { "Atmos" }
-          }
+          def _fAtmos = any{ audio.FormatCommercial =~ /(?i)atmos/ }{ false }
+          def _oAtmos = any{ audio.NumberOfDynamicObjects }{ false }
+          String isAtmos = (_fAtmos || _oAtmos) ? "Atmos" : null
           /* _channels_ uses "ChannelPositions/String2", "Channel(s)_Original", "Channel(s)"
              compared to _af_ which uses "Channel(s)_Original", "Channel(s)"
              local _channels uses the same variables as {channels} but calculates
