@@ -103,6 +103,19 @@
               _ch = splitCh.first().toDouble()
           }
 
+          /* UNUSED - possible fix for mistakes in ChannelPositions/String2 */
+          String channelParse
+          if ( chSimple.toInteger() != _ch.tokenize(".")*.toInteger().sum() ) {
+            List   channelsPos = au["ChannelPositions"].tokenize(",")
+            String mainFix = channelsPos.take(3).inject(0) { acc, p ->
+              Integer parsedCh = p.tokenize(":").takeRight(1).first().trim().tokenize(" ").size()
+              acc + parsedCh
+            }
+            String subFix = channelsPos.takeRight(1).first().trim().tokenize(" ").size()
+            channelParse = "${mainFix}.${subFix}"
+          }
+          /* UNUSED */
+
           def stream = allOf
             { allOf{ _ch }{ au["NumberOfDynamicObjects"] + "obj" }.join("+") }
             { allOf{ mCFP.get(_ac, _ac) }{isAtmos/* atmos */}.join("+") }
