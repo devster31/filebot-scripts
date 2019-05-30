@@ -131,7 +131,7 @@ allOf
                         { any{ au["Format/String"] }{ au["Format"] } }
                         { au["Format_Profile"] }
                         { au["Format_AdditionalFeatures"] }
-                        .join(" ") }
+                        .collect{ it.tokenize() }.flatten().unique().join(" ") }
                       { au["Format_Commercial"] }
           /* original _aco_ binding uses "Codec_Profile", "Format_Profile", "Format_Commercial" */
           String _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
