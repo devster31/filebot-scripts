@@ -64,6 +64,7 @@ allOf
                     *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")
                     *.replaceAll(/(?i:imax)/, "IMAX") }
                   { if (!!(fn.after(/(?i:$last)/) =~ /\WDC\W/)) "Directors Cut" }
+                  { fn.after(/(?i:$last)/).match(/remaster/).upperInitial().lowerTrail() }
                   .flatten().sort()
       if (specials.size() > 0) {
         specials.removeIf{ a ->
