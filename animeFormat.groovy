@@ -8,11 +8,14 @@
 
   def transl = { it.transliterate("Any-Latin; NFD; NFC; Title") }
   def isLatin = { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD)
-                                  .replaceAll(/\p{InCombiningDiacriticalMarks}+/, "") ==~ /^\p{InBasicLatin}+$/ }
+                                      .replaceAll(/\p{InCombiningDiacriticalMarks}+/, "") ==~ /^\p{InBasicLatin}+$/ }
 
 allOf
   {"Anime"}
-  { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
+  { allOf
+      { norm(n).colon(" - ").replaceTrailingBrackets() }
+      { "($y)" }
+    .join(" ") }
   { allOf
     // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
     { norm(n).colon(", ").replaceTrailingBrackets() }
