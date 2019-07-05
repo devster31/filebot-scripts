@@ -1,5 +1,4 @@
-{ import java.math.RoundingMode
-  import net.filebot.Language
+{
   def norm = { it.replaceAll(/[`´‘’ʻ""“”]/, "'")
                  .replaceAll(/[|]/, " - ")
                  .replaceAll(/[?]/, "\uFE56")
