@@ -18,11 +18,12 @@ allOf
     .join(" ") }
   { allOf
     // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
-    { norm(n).colon(", ").replaceTrailingBrackets() }
+    { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
     { episode.special ? "S$special" : "EP" + absolute.pad(2) }
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
-      { norm(t).colon(", ") }
+      { def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
+        norm(localize."$trLang".t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
       {"PT $pi"}
       { allOf
         {" ["}
