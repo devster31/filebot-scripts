@@ -10,12 +10,19 @@
   def isLatin = { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD)
                                       .replaceAll(/\p{InCombiningDiacriticalMarks}+/, "") ==~ /^\p{InBasicLatin}+$/ }
 
+  // def isEng = any{ audio.language ==~ /en/ }{ true }
+  // def isJpn = any{ languages.first().iso_639_2B == "jpn" || net.filebot.Language.findLanguage(audio.language.first()).iso_639_2B == "jpn" }{false}
+  def isEng = any{ audio.language.first() ==~ /en/ }{ true }
+  def isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
+
 allOf
-  {"Anime"}
+  { "Anime" }
   { allOf
       { norm(n).colon(" - ").replaceTrailingBrackets() }
       { "($y)" }
     .join(" ") }
+  { if (episode.special) "Specials" } // else { if (sc > 0) "Season $s" }
+  /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
   { allOf
     // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
     { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
@@ -24,7 +31,8 @@ allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
         norm(localize."$trLang".t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
-      {"PT $pi"}
+      { tags.join(", ").replaceAll(/^/, " - ") }
+      { "PT $pi" }
       { allOf
         {" ["}
         { allOf
