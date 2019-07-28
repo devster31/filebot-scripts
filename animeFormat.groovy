@@ -25,7 +25,11 @@ allOf
   /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
   { allOf
     // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
-    { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
+  	{ allOf
+      { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
+        (grp) ? "[$grp]" : "[$group]" }
+      { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
+      .join(" ") }
     { episode.special ? "S$special" : "EP" + absolute.pad(2) }
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
@@ -184,8 +188,6 @@ allOf
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
           if (ed) { ".$ed" } }
-        { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
-          (grp) ? "-$grp" : "-$group" }
         /* { def grp = fn.match(/(?<=[-])\w+$/)
           any{"-$group"}{"-$grp"} } */
         {subt}
