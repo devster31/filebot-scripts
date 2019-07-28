@@ -6,9 +6,13 @@
                  // .upperInitial().lowerTrail()
                  .replaceAll(/[`´‘’ʻ""“”]/, "'")
                  .replaceAll(/[:|]/, " - ")
-                 // .replaceAll(/[:]/, "\uFF1A")
-                 // .replaceAll(/[:]/, "\u2236") // ratio
-                 .replaceAll(/[?]/, "\uFE56")
+                 // .replaceAll(/[:]/, "\u2236") // "∶" Ratio symbol
+                 // .replaceAll(/[:]/, "\uFF1A") // "：" Fullwidth Colon
+                 // .replaceAll(/[:]/, "\uFE55") // "﹕" Small Colon
+                 // .replaceAll("/", "\u29F8") // "⧸" Big Solidus
+                 // .replaceAll("/", "\u2215") // "∕" Division Slash
+                 // .replaceAll("/", "\u2044") // "⁄" Fraction Slash
+                 .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
                  .replaceAll(/[*\s]+/, " ")
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
                  .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() }) }
