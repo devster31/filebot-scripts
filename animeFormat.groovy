@@ -19,6 +19,7 @@ allOf
   { "Anime" }
   { allOf
       { norm(n).colon(" - ").replaceTrailingBrackets() }
+      { "[" + norm(primaryTitle).colon(" - ") + "]" }
       { "($y)" }
     .join(" ") }
   { if (episode.special) "Specials" } // else { if (sc > 0) "Season $s" }
@@ -34,7 +35,21 @@ allOf
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
-        norm(localize."$trLang".t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
+        // ╱ is the replacement for slash
+        switch (trLang) {
+          case { it == "x-jat" }:
+          allOf
+            { norm(localize."$trLang".t).colon(", ").slash("\u2571") }
+            { "[" + norm(t).colon(", ").slash("\u2571") + "]" }
+            .join(" ")
+          break
+        case { it == "eng" }:
+          norm(t).colon(", ").slash("\u2571")
+          break
+        default:
+          norm(localize."$trLang".t).colon(", ").slash("\u2571")
+        }
+      }
       { tags.join(", ").replaceAll(/^/, " - ") }
       { "PT $pi" }
       { allOf
