@@ -41,7 +41,7 @@ allOf
           allOf
             { norm(localize."$trLang".t).colon(", ").slash("\u2571") }
             { "[" + norm(t).colon(", ").slash("\u2571") + "]" }
-            .join(" ")
+          .join(" ")
           break
         case { it == "eng" }:
           norm(t).colon(", ").slash("\u2571")
@@ -190,13 +190,13 @@ allOf
             }.toSorted{ it.id }.collect{ it.data }*.join(" ").join(", ") }
             /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
             /* logo-free release source finder + source */
-            { def fileURL = new URL('file:///scripts/websources.txt')
+            { def fileURL = new URL("file:///scripts/websources.txt")
               def file = new File(fileURL.toURI())
               def websources = file.exists() ? readLines(file).join("|") : null
               def isWeb = (source ==~ /WEB.*/)
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
-              return allOf{lfr}{source}.join(".") }
+              return allOf{ lfr }{ source }.join(".") }
           .join(" - ") }
         {"]"}
         { "[$crc32]" }
