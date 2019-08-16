@@ -12,6 +12,7 @@
                  // .replaceAll("/", "\u29F8") // "⧸" Big Solidus
                  // .replaceAll("/", "\u2215") // "∕" Division Slash
                  // .replaceAll("/", "\u2044") // "⁄" Fraction Slash
+                 // .replaceAll(/[?]/, "\uFF1F") // "？" Fullwidth Question Mark
                  .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
                  .replaceAll(/[*\s]+/, " ")
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
