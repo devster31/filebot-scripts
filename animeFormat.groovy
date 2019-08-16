@@ -56,7 +56,7 @@ allOf
         {" ["}
         { allOf
           // Video stream
-          { allOf{vf}{vc}.join(" ") }
+          { allOf{ vf }{ vc }{ if (bitdepth > 8) "$bitdepth-bit"}.join(" ") }
           {
             /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
             def mCFP = [
