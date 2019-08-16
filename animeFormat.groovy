@@ -109,12 +109,12 @@ allOf
                  Format_Commercial (and _If_Any variant) seem to be defined
                  mainly for Dolby/DTS formats */
               String _ac = any
-                          { allOf
-                            { any{ au["Format/String"] }{ au["Format"] } }
-                            { au["Format_Profile"] }
-                            { au["Format_AdditionalFeatures"] }
-                            .collect{ it.tokenize() }.flatten().unique().join(" ") }
-                          { au["Format_Commercial"] }
+                            { allOf
+                                { any{ au["Format/String"] }{ au["Format"] } }
+                                { au["Format_Profile"] }
+                                { au["Format_AdditionalFeatures"] }
+                              .collect{ it.tokenize() }.flatten().unique().join(" ") }
+                            { au["Format_Commercial"] }
               /* original _aco_ binding uses "Codec_Profile", "Format_Profile", "Format_Commercial" */
               String _aco = any{ au["Codec_Profile"] }{ au["Format_Profile"] }{ au["Format_Commercial"] }
               /* def atmos = (_aco =~ /(?i:atmos)/) ? "Atmos" : null */
