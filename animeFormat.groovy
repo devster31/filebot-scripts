@@ -15,6 +15,16 @@
   def isEng = any{ audio.language.first() ==~ /en/ }{ true }
   def isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
 
+  String.metaClass.wrap { l = "(", r = ")" ->
+    l + delegate + r
+  }
+
+/* alternative to the above, with defaults, usable with any Type
+  String wrap(s, l = "(", r = ")") {
+    l + s + r
+  }
+*/
+
 allOf
   { "Anime" }
   { allOf
@@ -53,7 +63,6 @@ allOf
       { tags.join(", ").replaceAll(/^/, " - ") }
       { "PT $pi" }
       { allOf
-        {" ["}
         { allOf
           // Video stream
           { allOf{ vf }{ vc }{ if (bitdepth > 8) "$bitdepth-bit"}.join(" ") }
@@ -197,8 +206,7 @@ allOf
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
               return allOf{ lfr }{ source }.join(".") }
-          .join(" - ") }
-        {"]"}
+          .join(" - ").wrap("[", "]") }
         { "[$crc32]" }
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
