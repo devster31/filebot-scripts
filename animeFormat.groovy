@@ -15,12 +15,30 @@
   Boolean isEng = any{ audio.language.first() ==~ /en/ }{ true }
   Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
 
-  String.metaClass.wrap { l = "(", r = ")" ->
-    l + delegate + r
+  // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
+  String mainTitle = any{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
+  String primTitle = norm(primaryTitle).colon(" - ")
+
+/**
+ * Surrounds a string with specified characters, uses "(" and ")" by default.
+ *
+ * e.g assert "Doctor Who".surround() == "(Doctor Who)"
+ *
+ * @param  left  Character used on the left of the string, "(" by default
+ * @param  right Character used on the right of the string, ")" by default
+ * @return       String surrounded by the specified Characters
+ * @since  4.8.6
+ */
+  public static String surround(String self, Character left = "(", Character right = ")") {
+    return left + self + right
   }
 
 /* alternative to the above, with defaults, usable with any Type
-  String wrap(s, l = "(", r = ")") {
+  String.metaClass.surround { l = "(", r = ")" ->
+    l + delegate + r
+  }
+
+  String surround(s, l = "(", r = ")") {
     l + s + r
   }
 */
@@ -28,19 +46,44 @@
 allOf
   { "Anime" }
   { allOf
-      { norm(n).colon(" - ").replaceTrailingBrackets() }
-      { "[" + norm(primaryTitle).colon(" - ") + "]" }
-      { "($y)" }
+      { mainTitle }
+      { db.TheTVDB.y.toString().surround() }
     .join(" ") }
-  { if (episode.special) "Specials" } // else { if (sc > 0) "Season $s" }
+  {
     // TODO: possibly replace with db.TheTVDB.special
+    if (episode.special) { // else { if (sc > 0) "Season $s" }
+      "Specials"
+    } else {
+      allOf
+        { ["Season", db.TheTVDB.s].join(" ") }
+        { if (mainTitle != primTitle) primTitle.surround("[", "]") }
+        { db.TheTVDB.sy.bounds().join("-").surround() }
+      .join(" ")
+    }
+  }
   { allOf
   	{ allOf
         { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
           (grp) ? "[$grp]" : "[$group]" }
-      { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
+        { mainTitle }
       .join(" ") }
-    { episode.special ? "S$special" : "EP" + absolute.pad(2) }
+    { // EPISODE NUMBERING
+      // String _absolute = "EP" + db.TheTVDB.absolute.pad(2)
+      if (episode.special) {
+        "S$special"
+      } else {
+        any
+          { allOf
+              /*
+              { if (db.TheTVDB.sc > 1) db.TheTVDB.s00e00 }
+              { db.TheTVDB.sc > 1 ? _absolute.surround("(", ")") : _absolute }
+              */
+              { db.TheTVDB.sxe }
+              { db.TheTVDB.absolute.pad(2).surround("(", ")") }
+            .join(" ") }
+          { absolute.pad(2) }
+      }
+    }
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { // EPISODE NAME
@@ -206,7 +249,7 @@ allOf
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
               return allOf{ lfr }{ source }.join(".") }
-          .join(" - ").wrap("[", "]") }
+          .join(" - ").surround("[", "]") }
         { "[$crc32]" }
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
