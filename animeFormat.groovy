@@ -12,8 +12,8 @@
 
   // def isEng = any{ audio.language ==~ /en/ }{ true }
   // def isJpn = any{ languages.first().iso_639_2B == "jpn" || net.filebot.Language.findLanguage(audio.language.first()).iso_639_2B == "jpn" }{false}
-  def isEng = any{ audio.language.first() ==~ /en/ }{ true }
-  def isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
+  Boolean isEng = any{ audio.language.first() ==~ /en/ }{ true }
+  Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
 
   String.metaClass.wrap { l = "(", r = ")" ->
     l + delegate + r
@@ -33,18 +33,18 @@ allOf
       { "($y)" }
     .join(" ") }
   { if (episode.special) "Specials" } // else { if (sc > 0) "Season $s" }
-  /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
+    // TODO: possibly replace with db.TheTVDB.special
   { allOf
-    // { primaryTitle ? norm(primaryTitle).colon(" ").replaceTrailingBrackets() : norm(n).colon(" ").replaceTrailingBrackets() }
   	{ allOf
-      { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
-        (grp) ? "[$grp]" : "[$group]" }
+        { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
+          (grp) ? "[$grp]" : "[$group]" }
       { primaryTitle ? norm(primaryTitle).colon(" - ") : norm(n).colon(" - ") }
       .join(" ") }
     { episode.special ? "S$special" : "EP" + absolute.pad(2) }
     { allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
-      { def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
+      { // EPISODE NAME
+        def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
         // ╱ is the replacement for slash
         switch (trLang) {
           case { it == "x-jat" }:
@@ -64,7 +64,7 @@ allOf
       { "PT $pi" }
       { allOf
         { allOf
-          // Video stream
+          // Video
           { allOf{ vf }{ vc }{ if (bitdepth > 8) "$bitdepth-bit"}.join(" ") }
           {
             /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
