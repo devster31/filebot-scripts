@@ -48,10 +48,10 @@ allOf
   }
   // Movies directory
   { def film_directors = info.directors.sort().join(", ")
-    n.colon(" - ") + " ($y) [$film_directors]" }
+    n.colon("\u2236 ") + " ($y) [$film_directors]" }
   // File name
   { allOf
-    { isLatin(primaryTitle) ? primaryTitle.colon(" - ") : transl(primaryTitle).colon(" - ") }
+    { isLatin(primaryTitle) ? primaryTitle.colon("\u2236 ") : transl(primaryTitle).colon("\u2236 ") }
     {" ($y)"}
     // tags + a few more variants
     { def last = n.tokenize(" ").last()
