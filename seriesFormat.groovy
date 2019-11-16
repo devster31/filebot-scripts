@@ -6,7 +6,7 @@
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
                  .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() }) }
 
-def isEng = any{audio.language ==~ /en/}{true}
+def isEng = any{ audio.language.any{ it ==~ /en/ } }{ audio.language ==~ /en/ }{true}
 
 allOf
   {"TV Shows"}
