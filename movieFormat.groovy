@@ -58,7 +58,7 @@ allOf
       /* def _tags = (tags != null) ? tags : null */
       def _tags = call{tags}
       if (_tags) {
-      	_tags.removeIf { it ==~ /(?i:imax)/ }
+        _tags.removeIf { it ==~ /(?i:imax)/ }
       }
 
       specials = allOf
