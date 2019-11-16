@@ -220,7 +220,18 @@ allOf
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
         def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
-        return allOf{fn.match(/(?i)(UHD).$source/).upper()}{lfr}{source}.join(".") }
+        allOf
+          { fn.match(/(?i)(UHD).$source/).upper() }
+          { lfr }
+          {
+            def replacements = [
+              'Blu-Ray': 'BluRay',
+              'Blu-ray': 'BluRay',
+              'BD': 'BluRay'
+            ]
+            source.replace(replacements)
+          }
+        .join(".") }
       .join(" - ") }
     {"]"}
     { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
