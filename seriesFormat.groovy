@@ -28,8 +28,60 @@ allOf
       { allOf
         {" ["}
         { allOf
-          // Video stream
-          { allOf{vf}{vc}.join(" ") }
+          { // Video
+            // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
+            allOf
+              { vf }
+              { vc }
+              {
+                def _HDRMap = [
+                  "HDR10": "HDR10",
+                  "SMPTE ST 2086": "HDR10",
+                  "SMPTE ST 2094 App 4": "HDR10+",
+                  "Dolby Vision / SMPTE ST 2086": "Dolby Vision",
+                  "Dolby Vision / HDR10": "Dolby Vision",
+                  "SL-HDR1": "SL-HDR1", // , Version 1.0, Parameter-based, constant
+                                        // , Version 1.0, Parameter-based, non-constant
+                  "SL-HDR2": "SL-HDR2", // , Version 0.0, Parameter-based
+                ]
+                def vid = video.first()
+                if (bitdepth > 8) {
+                  String _HDR
+                  switch (vid) {
+                    case { it.findAll { p -> p.key =~ /^HDR_/ }.size() > 0 }:
+                      _HDR = any
+                        { vid["HDR_Format_Commercial"] }
+                        { vid["HDR_Format"] }
+                        { hdr }
+                        { null }
+                        // { vid["HDR_Format/String"] }
+                        // { vid["HDR_Format_Compatibility"] }
+                        // following for both HDR10+ (misses compatibility) and Dolby Vision
+                        // { vid["HDR_Format_Version"] }
+                        // following only for Dolby Vision
+                        // { vid["HDR_Format_Profile"] }
+                        // { vid["HDR_Format_Level"] }
+                        // { vid["HDR_Format_Settings"] }
+
+                      // _HDRMap.get(_HDR, _HDR)
+                      _HDRMap.find { k, v ->
+                        k =~ _HDR
+                      }?.value
+                      break
+                    case { it["transfer_characteristics"].findMatch(/HLG/) }:
+                      "HLG"
+                      break
+                    case { it["transfer_characteristics"] == "PQ" && it["colour_primaries"] == "BT.2020" }:
+                      "HDR"
+                      break
+                    default:
+                      "$bitdepth-bit"
+                    break
+                  }
+                }
+              }
+            .join(" ")
+          }
           {
             /* def audioClean = { if (it != null) it.replaceAll(/[\p{Pd}\p{Space}]/, " ").replaceAll(/\p{Space}{2,}/, " ") }
             def mCFP = [
