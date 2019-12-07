@@ -10,6 +10,7 @@ America's Test Kitchen                         ATK
 Animal Planet                                  ANPL
 AnimeLab                                       ANLB
 AOL                                            AOL
+Apple TV+                                      ATVP
 ARD                                            ARD
 BBC iPlayer                                    iP
 Blackpills                                     BKPL
@@ -19,6 +20,7 @@ Canal+                                         CNLP
 Cartoon Network                                CN
 CBC                                            CBC
 CBS                                            CBS
+Dropout                                        DRPO
 Channel 4                                      4OD
 CHRGD                                          CHGD
 Cinemax                                        CMAX
@@ -42,6 +44,7 @@ Digiturk Dilediğin Yerde                       DDY
 DirecTV Now                                    DTV
 Discovery Channel                              DISC
 Disney                                         DSNY
+Disney+                                        DSNP
 DIY Network                                    DIY
 Doc Club                                       DOCC
 DPlay                                          DPLY
@@ -54,6 +57,7 @@ Family                                         FAM
 Family Jr                                      FJR
 Food Network                                   FOOD
 Fox                                            FOX
+FPT Play                                       FPT
 France.tv                                      FTV
 Freeform                                       FREE
 Funimation                                     FUNI
