@@ -1,5 +1,5 @@
 cask 'filebot' do
-  version '4.8.6'
+  version '4.9.0'
   sha256 :no_check
   conflicts_with cask: "filebot"
 
