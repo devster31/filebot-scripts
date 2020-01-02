@@ -69,6 +69,35 @@ async function ensureDir (dir, opts) {
 			path.relative(process.cwd(), p)
 		)
 	}
+
+	fs.mkdir(p, mode, er => {
+		if (!er) {
+			made = made || p
+			return callback(null, made)
+		}
+
+		switch (er.code) {
+		case 'ENOENT':
+			if (path.dirname(p) === p) return er
+			mkdirs(path.dirname(p), opts, (er, made) => {
+				if (er) return er
+				else mkdirs(p, opts, callback, made)
+			})
+			break
+
+		// In the case of any other error, just see if there's a dir
+		// there already.  If so, then hooray!  If not, then something
+		// is borked.
+		default:
+			xfs.stat(p, (er2, stat) => {
+				// if the stat fails, then that's super weird.
+				// let the original error be the failure reason.
+				if (er2 || !stat.isDirectory()) callback(er, made)
+				else callback(null, made)
+			})
+			break
+		}
+	})
 }
 
 /**
