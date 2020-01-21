@@ -321,7 +321,7 @@ _qb_multi="multi"
 log "Value of _qb_multi:        $_qb_multi"
 
 [[ "$_arg_qb_category" =~ (tv_shows|tv|anime|movies|movie) ]] || \
-    (log 'FileBot not handling this category, skipping' ; exit 0)
+    { log 'FileBot not handling this category, skipping' ; exit 0; }
 
 # LINKS=("$(find "$_arg_qb_root" -type l)")
 # NOT reliable and returns array of length 1 even when empty
