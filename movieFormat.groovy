@@ -239,9 +239,11 @@ allOf
           }
 
           /* UNUSED - possible fix for mistakes in ChannelPositions/String2 */
+          String _channelPositions = any{au["ChannelPositions"]}{null}
           String channelParse
-          if ( chSimple.toInteger() != _ch.tokenize(".")*.toInteger().sum() ) {
-            List   channelsPos = au["ChannelPositions"].tokenize(",")
+          if ( chSimple.toInteger() != _ch.tokenize(".")*.toInteger().sum() &&
+               _channelPositions != null ) {
+            List   channelsPos = _channelPositions.tokenize(",")
             String mainFix = channelsPos.take(3).inject(0) { acc, p ->
               Integer parsedCh = p.tokenize(":").takeRight(1).first().trim().tokenize(" ").size()
               acc + parsedCh
