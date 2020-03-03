@@ -1,7 +1,8 @@
 {
   def norm = { it.replaceAll(/[`´‘’ʻ""“”]/, "'")
                  .replaceAll(/[|]/, " - ")
-                 .replaceAll(/[?]/, "\uFE56")
+                 .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
+                 .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
                  .replaceAll(/[*\p{Zs}]+/, " ")
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
                  .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() }) }

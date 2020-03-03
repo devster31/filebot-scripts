@@ -14,6 +14,7 @@
                  // .replaceAll("/", "\u2044") // "⁄" Fraction Slash
                  // .replaceAll(/[?]/, "\uFF1F") // "？" Fullwidth Question Mark
                  .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
+                 .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
                  .replaceAll(/[*\s]+/, " ")
                  .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
                  .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() }) }
