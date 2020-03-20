@@ -271,7 +271,7 @@ allOf
       /* logo-free release source finder + source */
       { def fileURL = new URL("file:///scripts/websources.txt")
         def file = new File(fileURL.toURI())
-        def websources = file.exists() ? readLines(file).join("|") : null
+        def websources = file.exists() ? lines(file).join("|") : null
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
         def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
