@@ -65,7 +65,7 @@ allOf
               { db.TheTVDB.sc > 1 ? _absolute.surround("(", ")") : _absolute }
               */
               { db.TheTVDB.sxe }
-              { db.TheTVDB.absolute.pad(2).surround("(", ")") }
+              { db.TheTVDB.absolute.pad(2).surround() }
             .join(" ") }
           { absolute.pad(2) }
       }
