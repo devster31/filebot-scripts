@@ -19,25 +19,11 @@
   String mainTitle = any{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
   String primTitle = norm(primaryTitle).colon(" - ")
 
-/**
- * Surrounds a string with specified characters, uses "(" and ")" by default.
- *
- * e.g assert "Doctor Who".surround() == "(Doctor Who)"
- *
- * @param  left  Character used on the left of the string, "(" by default
- * @param  right Character used on the right of the string, ")" by default
- * @return       String surrounded by the specified Characters
- * @since  4.8.6
- */
-  public static String surround(String self, Character left = "(", Character right = ")") {
-    return left + self + right
-  }
-
-/* alternative to the above, with defaults, usable with any Type
   String.metaClass.surround { l = "(", r = ")" ->
     l + delegate + r
   }
 
+/* alternative to the above, with defaults, usable with any Type
   String surround(s, l = "(", r = ")") {
     l + s + r
   }
