@@ -221,7 +221,10 @@ allOf
               def websources = file.exists() ? lines(file).join("|") : null
               def isWeb = (source ==~ /WEB.*/)
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
-              def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
+              String lfr
+              if (isWeb) {
+                lfr = fn.match(/($websources)\.(?i)WEB/)
+              }
               return allOf{lfr}{source}.join(".") }
           .join(" - ") }
         {"]"}

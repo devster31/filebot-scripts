@@ -57,7 +57,7 @@ allOf
     // tags + a few more variants
     { def last = n.tokenize(" ").last()
       /* def _tags = (tags != null) ? tags : null */
-      def _tags = call{tags}
+      def _tags = any{tags}{null}
       if (_tags) {
         _tags.removeIf { it ==~ /(?i:imax)/ }
       }
@@ -274,7 +274,10 @@ allOf
         def websources = file.exists() ? lines(file).join("|") : null
         def isWeb = (source ==~ /WEB.*/)
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
-        def lfr = { if (isWeb) fn.match(/($websources)\.(?i)WEB/) }
+        String lfr
+        if (isWeb) {
+          lfr = fn.match(/($websources)\.(?i)WEB/)
+        }
         allOf
           { def yrange = (y-1)..(y+1)
             fn.find(/([0-9]{4}).([A-Z]{3}).1080p/) { match, year, country ->
