@@ -223,9 +223,14 @@ allOf
               // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
               String lfr
               if (isWeb) {
-                lfr = any{fn.match(/($websources)\.(?i)WEB/)}{null}
+                lfr = any{ fn.match(/($websources)\.(?i)WEB/)}
+		         { if (fn.matches(/(?<=\d{3}[p].)WEB|WEB(?=.[hx]\d{3})/)) 'WEB-DL' }
+                         { null }
               }
-              def src = vs =~ /BluRay|HDTV/ ? vs : source
+              def replacements = [
+                'dvdrip': 'DVDRip',
+              ]
+              def src = vs =~ /BluRay|HDTV/ ? vs : source.replace(replacements)
               return allOf{lfr}{src}.join(".") }
           .join(" - ") }
         {"]"}

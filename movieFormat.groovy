@@ -276,7 +276,9 @@ allOf
         // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
         String lfr
         if (isWeb) {
-          lfr = fn.match(/($websources)\.(?i)WEB/)
+          lfr = any{ fn.match(/($websources)\.(?i)WEB/) }
+                   { if (fn.matches(/(?<=\d{3}[p].)WEB|WEB(?=.[hx]\d{3})/)) 'WEB-DL' }
+                   { null }
         }
         allOf
           { def yrange = (y-1)..(y+1)
