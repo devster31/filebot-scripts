@@ -20,11 +20,11 @@ allOf
   { episode.special ? "Specials" : allOf{"Season"}{s}.join(" ") }
   /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
   { allOf
-    { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].n).colon(", ").replaceTrailingBrackets() : norm(n).colon(", ").replaceTrailingBrackets() }
+    { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].n).colon("\u2236 ").replaceTrailingBrackets() : norm(n).colon("\u2236 ").replaceTrailingBrackets() }
     { episode.special ? "S00E" + special.pad(2) : s00e00 }
     { allOf
       // { t.replacePart(replacement = ", Part $1") }
-      { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].t).colon(", ").slash("\u2571") : norm(t).colon(", ").slash("\u2571") } // ╱ is the replacement for slash
+      { (!isEng && (audio.language != null)) ? norm(localize[audio.language[0]].t).colon("\u2236 ").slash("\u2571") : norm(t).colon("\u2236 ").slash("\u2571") } // ╱ is the replacement for slash
       {"PT $pi"}
       { allOf
         {" ["}
