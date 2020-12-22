@@ -15,7 +15,8 @@ allOf
       { (!isEng && (audio.language != null)) ?
         norm(localize[audio.language[0]].n).colon(" - ").replaceTrailingBrackets() :
         norm(n).colon(" - ").replaceTrailingBrackets() }
-      { "($y)" }
+      { def firstYear = episodelist.find{ it.regular }.airdate.year
+        "($firstYear)" }
     .join(" ") }
   { episode.special ? "Specials" : allOf{"Season"}{s}.join(" ") }
   /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
