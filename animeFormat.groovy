@@ -74,16 +74,17 @@ allOf
       // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { // EPISODE NAME
         def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
+        def epName = any{ db.TheTVDB.t }{t}
         // ╱ is the replacement for slash
         switch (trLang) {
           case { it == "x-jat" }:
           allOf
             { norm(localize."$trLang".t).colon(", ").slash("\u2571") }
-            { "[" + norm(t).colon(", ").slash("\u2571") + "]" }
+            { "[" + norm(epName).colon(", ").slash("\u2571") + "]" }
           .join(" ")
           break
         case { it == "eng" }:
-          norm(t).colon(", ").slash("\u2571")
+          norm(epName).colon(", ").slash("\u2571")
           break
         default:
           norm(localize."$trLang".t).colon(", ").slash("\u2571")
