@@ -13,7 +13,7 @@
   // def isEng = any{ audio.language ==~ /en/ }{ true }
   // def isJpn = any{ languages.first().iso_639_2B == "jpn" || net.filebot.Language.findLanguage(audio.language.first()).iso_639_2B == "jpn" }{false}
   Boolean isEng = any{ audio.language.first() ==~ /en/ }{ true }
-  Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ || audio.language.first() ==~ /ja/ }{ false }
+  Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ }{ audio.language.first() ==~ /ja/ }{ false }
 
   // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
   String mainTitle = any{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
