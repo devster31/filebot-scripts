@@ -17,7 +17,7 @@
 
   // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
   String mainTitle = any{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
-  String primTitle = norm(primaryTitle).colon(" - ")
+  String primTitle = norm(primaryTitle).colon(" - ").replaceTrailingBrackets()
 
   String.metaClass.surround { l = "(", r = ")" ->
     l + delegate + r
@@ -42,7 +42,7 @@ allOf
     } else {
       allOf
         { ["Season", db.TheTVDB.s].join(" ") }
-        { if (mainTitle != primTitle) primTitle.surround("[", "]") }
+        { if (mainTitle.getSimilarity(primTitle) < 0.95) primTitle.surround("[", "]") }
         { db.TheTVDB.sy.bounds().join("-").surround() }
       .join(" ")
     }
