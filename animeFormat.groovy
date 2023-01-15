@@ -1,10 +1,13 @@
 {
-  def norm = { it.replaceAll(/[`´‘’ʻ""“”]/, "'")
-                 .replaceAll(/[|]/, " - ")
-                 .replaceAll(/[?]/, "\uFE56")
-                 .replaceAll(/[*\p{Zs}]+/, " ")
-                 .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
-                 .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() }) }
+  def normTV = {
+    it.replaceAll(/[`´‘’ʻ""“”]/, "'")
+      .replaceAll(/[|]/, " - ")
+      .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
+      .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
+      .replaceAll(/[*\p{Zs}]+/, " ")
+      .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
+      .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
+  }
 
   def transl = { it.transliterate("Any-Latin; NFD; NFC; Title") }
   def isLatin = { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD)
@@ -79,15 +82,15 @@ allOf
         switch (trLang) {
           case { it == "x-jat" }:
           allOf
-            { norm(localize."$trLang".t).colon(", ").slash("\u2571") }
-            { "[" + norm(epName).colon(", ").slash("\u2571") + "]" }
+            { normTV(localize."$trLang".t).colon(", ").slash("\u2571") }
+            { "[" + normTV(epName).colon(", ").slash("\u2571") + "]" }
           .join(" ")
           break
         case { it == "eng" }:
-          norm(epName).colon(", ").slash("\u2571")
+          normTV(epName).colon(", ").slash("\u2571")
           break
         default:
-          norm(localize."$trLang".t).colon(", ").slash("\u2571")
+          normTV(localize."$trLang".t).colon(", ").slash("\u2571")
         }
       }
       { tags.join(", ").replaceAll(/^/, " - ") }
