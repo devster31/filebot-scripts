@@ -9,27 +9,38 @@
       .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
   }
 
-def isEng = any{ audio.language.any{ it ==~ /en/ } }{ audio.language ==~ /en/ }{true}
+  Boolean isEng = any{ audio.language.any{ it ==~ /en/ } }{ audio.language ==~ /en/ }{true}
 
-allOf
-  {"TV Shows"}
-  { allOf
-      { (!isEng && (audio.language != null)) ?
+  allOf
+    {"TV Shows"}
+    { allOf
+        { (!isEng && (audio.language != null)) ?
           normTV(localize[audio.language[0]].n).colon(" - ").replaceTrailingBrackets() :
           normTV(n).colon(" - ").replaceTrailingBrackets() }
-      { def firstYear = episodelist.find{ it.regular }.airdate.year
-        "($firstYear)" }
-    .join(" ") }
-  { episode.special ? "Specials" : allOf{"Season"}{s}.join(" ") }
-  /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
-  { allOf
-      { (!isEng && (audio.language != null)) ? normTV(localize[audio.language[0]].n).colon("\u2236 ").replaceTrailingBrackets() : normTV(n).colon("\u2236 ").replaceTrailingBrackets() }
-    { episode.special ? "S00E" + special.pad(2) : s00e00 }
+        { def firstYear = episodelist.find{ it.regular }.airdate.year
+          "($firstYear)" }
+      .join(" ") }
+    { episode.special ? "Specials" : allOf{"Season"}{s}.join(" ") }
+    /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
     { allOf
-      // { t.replacePart(replacement = ", Part $1") }
-        { (!isEng && (audio.language != null)) ? normTV(localize[audio.language[0]].t).colon("\u2236 ").slash("\u2571") : normTV(t).colon("\u2236 ").slash("\u2571") } // ╱ is the replacement for slash
-      {"PT $pi"}
+      {
+        if (!isEng && (audio.language != null)) {
+          normTV(localize[audio.language[0]].n).colon("\u2236 ").replaceTrailingBrackets()
+        } else {
+          normTV(n).colon("\u2236 ").replaceTrailingBrackets()
+        }
+      { episode.special ? "S00E" + special.pad(2) : s00e00 }
       { allOf
+        // { t.replacePart(replacement = ", Part $1") }
+        {
+          if (!isEng && (audio.language != null)) {
+            normTV(localize[audio.language[0]].t).colon("\u2236 ").slash("\u2571")
+          } else {
+            normTV(t).colon("\u2236 ").slash("\u2571") // ╱ is the replacement for slash
+          }
+        }
+        {"PT $pi"}
+        { allOf
         {" ["}
         { allOf
           { // Video
@@ -37,7 +48,7 @@ allOf
             allOf
               { vf }
               { vc }
-                { include 'partials/hdrPart.groovy' }
+              { include 'partials/hdrPart.groovy' }
             .join(" ")
           }
           { include 'partials/audioPart.groovy' }
@@ -71,4 +82,5 @@ allOf
         .join("") }
       .join(" ") }
     .join(" - ") }
-  .join("/") }
+  .join("/")
+}

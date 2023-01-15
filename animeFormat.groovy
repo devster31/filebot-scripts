@@ -9,13 +9,7 @@
       .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
   }
 
-  def transl = { it.transliterate("Any-Latin; NFD; NFC; Title") }
-  def isLatin = { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD)
-                                      .replaceAll(/\p{InCombiningDiacriticalMarks}+/, "") ==~ /^\p{InBasicLatin}+$/ }
-
-  // def isEng = any{ audio.language ==~ /en/ }{ true }
-  // def isJpn = any{ languages.first().iso_639_2B == "jpn" || net.filebot.Language.findLanguage(audio.language.first()).iso_639_2B == "jpn" }{false}
-  Boolean isEng = any{ audio.language.first() ==~ /en/ }{ true }
+  Boolean isEng = any{ audio.language.any{ it ==~ /en/ } }{ audio.language ==~ /en/ }{true}
   Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ }{ audio.language.first() ==~ /ja/ }{ false }
 
   // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
@@ -25,12 +19,6 @@
   String.metaClass.surround { l = "(", r = ")" ->
     l + delegate + r
   }
-
-/* alternative to the above, with defaults, usable with any Type
-  String surround(s, l = "(", r = ")") {
-    l + s + r
-  }
-*/
 
 allOf
   { "Anime" }
@@ -74,7 +62,6 @@ allOf
       }
     }
     { allOf
-      // { isLatin(t) ? t.colon(" - ") : transl(t).colon(" - ") }
       { // EPISODE NAME
         def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
         def epName = any{ db.TheTVDB.t }{t}
@@ -129,4 +116,5 @@ allOf
         .join("") }
       .join(" ") }
     .join(" - ") }
-  .join("/") }
+  .join("/")
+}
