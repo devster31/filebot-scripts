@@ -289,12 +289,12 @@ test -n "$SCRIPTS" || SCRIPTS="/scripts"
 # FileBot Configuration
 shopt -s nocasematch
 test -n "$OUT_DIR" || OUT_DIR="."
-test -n "$FILEBOT" || FILEBOT=`which filebot` || FILEBOT="/usr/bin/filebot"
+test -n "$FILEBOT" || FILEBOT=$(which filebot) || FILEBOT="/usr/bin/filebot"
 test -n "$PPR_LOG" || PPR_LOG=/config/postprocess.log
 MEDIA_OUTPUT="$OUT_DIR/Media"
 
 log() {
-    echo "$(date -Iseconds) [$(basename "$0")]: $@" | tee -a "$PPR_LOG"
+    echo "$(date -Iseconds) [$(basename "$0")]: $*" | tee -a "$PPR_LOG"
 }
 
 log "-------------------------------------"
