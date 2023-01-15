@@ -1,8 +1,0 @@
-{
-    "mailgun": {
-		"server": "smtp.mailgun.org",
-		"port": "587",
-        "from": "filebot@mail.dispenser.ovh"
-    },
-    "mailto": "devster31@gmail.com"
-}
