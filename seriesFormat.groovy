@@ -52,23 +52,7 @@
             .join(" ")
           }
           { include 'partials/audioPart.groovy' }
-            /* logo-free release source finder + source */
-            { def fileURL = new URL('file:///scripts/websources.txt')
-              def file = new File(fileURL.toURI())
-              def websources = file.exists() ? lines(file).join("|") : null
-              def isWeb = (source ==~ /WEB.*/)
-              // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
-              String lfr
-              if (isWeb) {
-                lfr = any{ fn.match(/($websources)\.(?i)WEB/)}
-		         { if (fn.matches(/(?<=\d{3}[p].)WEB|WEB(?=.[hx]\d{3})/)) 'WEB-DL' }
-                         { null }
-              }
-              def replacements = [
-                'dvdrip': 'DVDRip',
-              ]
-              def src = vs =~ /BluRay|HDTV/ ? vs : source.replace(replacements)
-              return allOf{lfr}{src}.join(".") }
+          { include 'partials/extraSource.groovy' }
           .join(" - ") }
         {"]"}
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")

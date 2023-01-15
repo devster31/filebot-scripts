@@ -95,40 +95,9 @@
           .join(" ")
         }
         { include 'partials/audioPart.groovy' }
-      /* logo-free release source finder + source */
-      { def fileURL = new URL("file:///scripts/websources.txt")
-        def file = new File(fileURL.toURI())
-        def websources = file.exists() ? lines(file).join("|") : null
-        def isWeb = (source ==~ /WEB.*/)
-        // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
-        String lfr
-        if (isWeb) {
-          lfr = any{ fn.match(/($websources)\.(?i)WEB/) }
-                   { if (fn.matches(/(?<=\d{3}[p].)WEB|WEB(?=.[hx]\d{3})/)) 'WEB-DL' }
-                   { null }
-        }
-        allOf
-          { def yrange = (y-1)..(y+1)
-            fn.find(/([0-9]{4}).([A-Z]{3}).1080p/) { match, year, country ->
-            	if (match &&
-                  yrange.contains(year.toInteger()) &&
-                  Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA3).contains(country))
-              country
-            }
-          }
-          { fn.match(/(?i)(UHD).$source/).upper() }
-          { lfr }
-          {
-            def replacements = [
-              'Blu-Ray': 'BluRay',
-              'Blu-ray': 'BluRay',
-              'BD': 'BluRay'
-            ]
-            source.replace(replacements)
-          }
-        .join(".") }
-      .join(" - ") }
-    {"]"}
+        { include 'partials/extraSource.groovy' }
+        .join(" - ") }
+      {"]"}
     { def ed = fn.findAll(/(?i)repack|proper|rerip/)*.upper().join(".")
       // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
       if (ed) { ".$ed" } }

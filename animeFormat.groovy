@@ -93,19 +93,9 @@ allOf
             .join(" ")
           }
           { include 'partials/audioPart.groovy' }
-            /* .sort{ a, b -> a.first() <=> b.first() }.reverse() */
-            /* logo-free release source finder + source */
-            { def fileURL = new URL("file:///scripts/websources.txt")
-              def file = new File(fileURL.toURI())
-              def websources = file.exists() ? lines(file).join("|") : null
-              def isWeb = (source ==~ /WEB.*/)
-              // def isWeb = source.matches(/WEB.*/) don't know which one is preferrable
-              String lfr
-              if (isWeb) {
-                lfr = any{fn.match(/($websources)\.(?i)WEB/)}{null}
-              }
-              return allOf{ lfr }{ source }.join(".") }
-          .join(" - ").surround("[", "]") }
+          { include 'partials/extraSource.groovy' }
+          .join(" - ").surround("[", "]")
+        }
         { "[$crc32]" }
         { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
