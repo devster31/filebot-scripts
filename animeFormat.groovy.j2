@@ -40,7 +40,7 @@ allOf
   }
   { allOf
   	{ allOf
-        { include "{{ scriptDir }}/partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
+        { include "{{ scriptDir }}/partials/groupPart.groovy" }
         { mainTitle }
       .join(" ") }
     { // EPISODE NUMBERING

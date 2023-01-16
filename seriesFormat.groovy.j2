@@ -56,7 +56,7 @@
           .join(" - ") }
         {"]"}
         { include '{{ scriptDir }}/partials/repackPart.groovy' }
-        { include "{{ scriptDir }}/partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
+        { include "{{ scriptDir }}/partials/groupPart.groovy" }
         {subt}
         .join("") }
       .join(" ") }
