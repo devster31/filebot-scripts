@@ -55,9 +55,8 @@
           { include 'partials/extraSource.groovy' }
           .join(" - ") }
         {"]"}
-        { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
+        { include 'partials/repackPart.groovy' }
           // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
-          if (ed) { ".$ed" } }
         { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
           (grp) ? "-$grp" : "-$group" }
         /* { def grp = fn.match(/(?<=[-])\w+$/)

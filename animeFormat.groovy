@@ -97,11 +97,7 @@ allOf
           .join(" - ").surround("[", "]")
         }
         { "[$crc32]" }
-        { def ed = fn.findAll(/(?i)repack|proper/)*.upper().join(".")
-          // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
-          if (ed) { ".$ed" } }
-        /* { def grp = fn.match(/(?<=[-])\w+$/)
-          any{"-$group"}{"-$grp"} } */
+        { include 'partials/repackPart.groovy' }
         {subt}
         .join("") }
       .join(" ") }

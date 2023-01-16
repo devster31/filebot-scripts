@@ -98,12 +98,11 @@
         { include 'partials/extraSource.groovy' }
         .join(" - ") }
       {"]"}
-    { def ed = fn.findAll(/(?i)repack|proper|rerip/)*.upper().join(".")
+      { include 'partials/repackPart.groovy' }
       // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
-      if (ed) { ".$ed" } }
+      {subt}
     /* { any{"-$group"}{"-" + fn.match(/(?:(?<=[-])\w+$)|(?:^\w+(?=[-]))/)} } */
     {"-$group"}
-    {subt}
     .join("") }
   .join("/")
 }
