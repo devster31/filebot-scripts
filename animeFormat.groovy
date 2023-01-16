@@ -13,7 +13,7 @@
   Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ }{ audio.language.first() ==~ /ja/ }{ false }
 
   // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
-  String mainTitle = any{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
+  String mainTitle = any{ db.TMDb.n }{ db.TheTVDB.n }{ norm(n).colon(" - ").replaceTrailingBrackets() }
   String primTitle = norm(primaryTitle).colon(" - ").replaceTrailingBrackets()
 
   String.metaClass.surround { l = "(", r = ")" ->
