@@ -6,10 +6,12 @@
       copy:
         src: "partials"
         dest: "/srv/pv/scripts/partials"
+        backup: true
     - name: template files out to destination
       ansible.builtin.template:
         src: "{{ item }}"
         dest: "/srv/pv/scripts/{{ item | basename | splitext | first }}"
+        backup: true
       vars:
         scriptDir: "/scripts"
       with_fileglob:
