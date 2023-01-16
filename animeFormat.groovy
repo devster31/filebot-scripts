@@ -40,8 +40,7 @@ allOf
   }
   { allOf
   	{ allOf
-        { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
-          (grp) ? "[$grp]" : "[$group]" }
+        { include "partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
         { mainTitle }
       .join(" ") }
     { // EPISODE NUMBERING

@@ -56,11 +56,7 @@
           .join(" - ") }
         {"]"}
         { include 'partials/repackPart.groovy' }
-          // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
-        { def grp = net.filebot.media.MediaDetection.releaseInfo.getReleaseGroup(fn.replaceAll(/\[.*\]$/, ""))
-          (grp) ? "-$grp" : "-$group" }
-        /* { def grp = fn.match(/(?<=[-])\w+$/)
-          any{"-$group"}{"-$grp"} } */
+        { include "partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
         {subt}
         .join("") }
       .join(" ") }

@@ -99,10 +99,8 @@
         .join(" - ") }
       {"]"}
       { include 'partials/repackPart.groovy' }
-      // def ed = allOf{fn.match(/repack|proper/)}{f.dir.path.match(/repack|proper/)}*.upper().join(".")
+      { include "partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
       {subt}
-    /* { any{"-$group"}{"-" + fn.match(/(?:(?<=[-])\w+$)|(?:^\w+(?=[-]))/)} } */
-    {"-$group"}
     .join("") }
   .join("/")
 }
