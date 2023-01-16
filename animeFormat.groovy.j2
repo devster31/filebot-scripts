@@ -40,7 +40,7 @@ allOf
   }
   { allOf
   	{ allOf
-        { include "partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
+        { include "{{ scriptDir }}/partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
         { mainTitle }
       .join(" ") }
     { // EPISODE NUMBERING
@@ -88,15 +88,15 @@ allOf
             allOf
               { vf }
               { vc }
-              { include 'partials/hdrPart.groovy' }
+              { include '{{ scriptDir }}/partials/hdrPart.groovy' }
             .join(" ")
           }
-          { include 'partials/audioPart.groovy' }
-          { include 'partials/extraSource.groovy' }
+          { include '{{ scriptDir }}/partials/audioPart.groovy' }
+          { include '{{ scriptDir }}/partials/extraSource.groovy' }
           .join(" - ").surround("[", "]")
         }
         { "[$crc32]" }
-        { include 'partials/repackPart.groovy' }
+        { include '{{ scriptDir }}/partials/repackPart.groovy' }
         {subt}
         .join("") }
       .join(" ") }

@@ -1,0 +1,16 @@
+# deploying to server
+# ansible-playbook -i <host>, playbook.yml
+- hosts: all
+  tasks:
+    - name: copy partials
+      copy:
+        src: "partials"
+        dest: "/srv/pv/scripts/partials"
+    - name: template files out to destination
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "/srv/pv/scripts/{{ item | basename | splitext | first }}"
+      vars:
+        scriptDir: "/scripts"
+      with_fileglob:
+        - "*.groovy.j2"

@@ -91,15 +91,15 @@
           allOf
             { vf }
             { vc }
-            { include 'partials/hdrPart.groovy' }
+            { include '{{ scriptDir }}/partials/hdrPart.groovy' }
           .join(" ")
         }
-        { include 'partials/audioPart.groovy' }
-        { include 'partials/extraSource.groovy' }
+        { include '{{ scriptDir }}/partials/audioPart.groovy' }
+        { include '{{ scriptDir }}/partials/extraSource.groovy' }
         .join(" - ") }
       {"]"}
-      { include 'partials/repackPart.groovy' }
-      { include "partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
+      { include '{{ scriptDir }}/partials/repackPart.groovy' }
+      { include "{{ scriptDir }}/partials/${ anime ? 'animeGroup' : 'genericGroup' }.groovy" }
       {subt}
     .join("") }
   .join("/")
