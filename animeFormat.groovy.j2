@@ -68,15 +68,15 @@ allOf
         switch (trLang) {
           case { it == "x-jat" }:
           allOf
-            { normTV(localize."$trLang".t).colon(", ").slash("\u2571") }
-            { "[" + normTV(epName).colon(", ").slash("\u2571") + "]" }
+            { normTV(localize."$trLang".t).colon("\u2236").slash("\u2571") }
+            { "[" + normTV(epName).colon("\u2236").slash("\u2571") + "]" }
           .join(" ")
           break
         case { it == "eng" }:
-          normTV(epName).colon(", ").slash("\u2571")
+          normTV(epName).colon("\u2236").slash("\u2571")
           break
         default:
-          normTV(localize."$trLang".t).colon(", ").slash("\u2571")
+          normTV(localize."$trLang".t).colon("\u2236").slash("\u2571")
         }
       }
       { tags.join(", ").replaceAll(/^/, " - ") }
