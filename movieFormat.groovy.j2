@@ -61,28 +61,7 @@
       { isLatin(primaryTitle) ? primaryTitle.colon("\u2236 ") : transl(primaryTitle).colon("\u2236 ") }
       {" ($y)"}
       // tags + a few more variants
-      { def last = n.tokenize(" ").last()
-        /* def _tags = (tags != null) ? tags : null */
-        def _tags = any{tags}{null}
-        if (_tags) {
-          _tags.removeIf { it ==~ /(?i:imax)/ }
-        }
-
-        specials = allOf
-                    { _tags }
-                    { fn.after(/(?i:$last)/).findAll(/(?i)(alternate|first)[ ._-]cut|limited|hybrid/)
-                      *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ") }
-                    { fn.after(/(?i:$last)/).findAll(/(?i)imax.?(edition|version)?/)
-                      *.upperInitial()*.lowerTrail()*.replaceAll(/[._-]/, " ")
-                      *.replaceAll(/(?i:imax)/, "IMAX") }
-                    { if (!!(fn.after(/(?i:$last)/) =~ /\WDC\W/)) "Directors Cut" }
-                    { fn.after(/(?i:$last)/).match(/remaster/).upperInitial().lowerTrail() }
-                    .flatten().sort()
-        if (specials.size() > 0) {
-          specials.removeIf{ a ->
-            _tags.any{ b ->
-              a != b && (b.startsWith(a) || b.endsWith(a)) } }
-          specials.unique().join(", ").replaceAll(/^/, " - ") } }
+      { include '{{ scriptDir }}/partials/extraTags.groovy' }
       {" PT $pi"}
       {" ["}
       { allOf
