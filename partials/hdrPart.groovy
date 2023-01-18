@@ -48,10 +48,10 @@ if (bitdepth > 8) {
             }
             hdr_out
             break
-        case { it['transfer_characteristics'].findMatch(/HLG/) && it['colour_primaries'] == 'BT.2020' }:
+        case { vid['transfer_characteristics'].findMatch(/HLG/) && vid['colour_primaries'] == 'BT.2020' }:
             'HLG10' // HLG
             break
-        case { it['transfer_characteristics'] == 'PQ' && it['colour_primaries'] == 'BT.2020' }:
+        case { vid['transfer_characteristics'] == 'PQ' && vid['colour_primaries'] == 'BT.2020' }:
             'HDR10' // PQ10 or HDR
             break
         default:
