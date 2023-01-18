@@ -43,32 +43,3 @@ String.metaClass.surround { l = "(", r = ")" ->
     l + s + r
   }
 */
-
-def normTV = {
-    it.replaceAll(/[`´‘’ʻ""“”]/, "'")
-        .replaceAll(/[|]/, " - ")
-        .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
-        .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
-        .replaceAll(/[*\p{Zs}]+/, " ")
-        .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
-        .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
-}
-
-def normMovie = {
-    it.replaceTrailingBrackets()
-        // .upperInitial().lowerTrail()
-        .replaceAll(/[`´‘’ʻ""“”]/, "'")
-        .replaceAll(/[:|]/, " - ")
-        // .replaceAll(/[:]/, "\u2236") // "∶" Ratio symbol
-        // .replaceAll(/[:]/, "\uFF1A") // "：" Fullwidth Colon
-        // .replaceAll(/[:]/, "\uFE55") // "﹕" Small Colon
-        // .replaceAll("/", "\u29F8") // "⧸" Big Solidus
-        // .replaceAll("/", "\u2215") // "∕" Division Slash
-        // .replaceAll("/", "\u2044") // "⁄" Fraction Slash
-        // .replaceAll(/[?]/, "\uFF1F") // "？" Fullwidth Question Mark
-        .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
-        .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
-        .replaceAll(/[*\p{Zs}]+/, " ")
-        .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
-        .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
-}
