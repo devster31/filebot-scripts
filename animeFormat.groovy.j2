@@ -1,10 +1,14 @@
 {
+  // \u201C = “
+  // \u201D = ”
+  // \u201E = „
+  // \u201F = “
   def normTV = {
-    it.replaceAll(/[`´‘’ʻ""“”]/, "'")
-      .replaceAll(/[|]/, " - ")
-      .replaceAll(/[?]/, "\uFE56") // "﹖" Small Question Mark
-      .replaceAll(/[\*]/, "\u204E") // "⁎" low asterisk
-      .replaceAll(/[*\p{Zs}]+/, " ")
+    it.replaceAll(/[`´‘’ʻ""“”“„‟]/, "'")
+      .replaceAll(/[|]/, ' - ')
+      .replaceAll(/[?]/, '\uFE56') // '﹖' Small Question Mark
+      .replaceAll(/[\*]/, '\u204E') // '⁎' low asterisk
+      .replaceAll(/[*\p{Zs}]+/, ' ')
       .replaceAll(/\b[IiVvXx]+\b/, { it.upper() })
       .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
   }
@@ -12,32 +16,32 @@
   Boolean isEng = any{ audio.language.any{ it ==~ /en/ } }{ audio.language ==~ /en/ }{true}
   Boolean isJpn = any{ languages.first().ISO2 ==~ /ja/ }{ audio.language.first() ==~ /ja/ }{ false }
 
-  // WARNING: any db.{AniDB,TheTVDB} binding requires FileBot 4.8.6 or above
-  String mainTitle = any{ db.TMDb.n }{ db.TheTVDB.n }{ normTV(n).colon(" - ").replaceTrailingBrackets() }
-  String primTitle = normTV(primaryTitle).colon(" - ").replaceTrailingBrackets()
+  // WARNING: any db.{AniDB,TMDb,TheTVDB} binding requires FileBot 4.8.6 or above
+  String mainTitle = any{ db.TMDb.n }{ db.TheTVDB.n }{ normTV(n).colon(' - ').replaceTrailingBrackets() }
+  String primTitle = normTV(primaryTitle).colon(' - ').replaceTrailingBrackets()
 
-  String.metaClass.surround { l = "(", r = ")" ->
+  String.metaClass.surround { l = '(', r = ')' ->
     l + delegate + r
   }
 
   allOf
-    { "Anime" }
+    { 'Anime' }
     {
       allOf
         { mainTitle }
-        { db.TheTVDB.y.toString().surround() }
-      .join(" ")
+        { db.TMDb.y.toString().surround() }
+      .join(' ')
     }
     {
-      // TODO: possibly replace with db.TheTVDB.special
+      // TODO: possibly replace with db.TMDb.special
       if (episode.special) { // else { if (sc > 0) "Season $s" }
-        "Specials"
+        'Specials'
       } else {
         allOf
-          { ["Season", db.TheTVDB.s].join(" ") }
-          { if (mainTitle.getSimilarity(primTitle) < 0.95) primTitle.surround("[", "]") }
-          { db.TheTVDB.sy.bounds().join("-").surround() }
-        .join(" ")
+          { ['Season', db.TMDb.s].join(' ') }
+          { if (mainTitle.getSimilarity(primTitle) < 0.95) primTitle.surround('[', ']') }
+          { db.TMDb.sy.bounds().join('-').surround() }
+        .join(' ')
       }
     }
     {
@@ -46,46 +50,48 @@
           allOf
             { include '{{ scriptDir }}/partials/groupPart.groovy' }
             { mainTitle }
-          .join(" ")
+          .join(' ')
         }
         { // EPISODE NUMBERING
-          // String _absolute = "EP" + db.TheTVDB.absolute.pad(2)
+          // String _absolute = 'EP' + db.TMDb.absolute.pad(2)
           if (episode.special) {
             "S$special"
           } else {
             any
-              { allOf
+              {
+                allOf
                   /*
-                  { if (db.TheTVDB.sc > 1) db.TheTVDB.s00e00 }
-                  { db.TheTVDB.sc > 1 ? _absolute.surround("(", ")") : _absolute }
+                  { if (db.TMDb.sc > 1) db.TMDb.s00e00 }
+                  { db.TMDb.sc > 1 ? _absolute.surround('(', ')') : _absolute }
                   */
-                  { db.TheTVDB.sxe }
-                  { db.TheTVDB.absolute.pad(2).surround() }
-                .join(" ") }
+                  { db.TMDb.sxe }
+                  { db.TMDb.absolute.pad(2).surround() }
+                .join(' ')
+              }
               { absolute.pad(2) }
           }
         }
         {
           allOf
             { // EPISODE NAME
-              def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
-              def epName = any{ db.TheTVDB.t }{t}
+              def trLang = any{ if (isJpn) 'x-jat' }{ if (isEng) 'eng' }{ audio.language.first() }{'eng'}
+              def epName = any{ db.TMDb.t }{t}
               // ╱ is the replacement for slash
               switch (trLang) {
-                case { it == "x-jat" }:
+                case { it == 'x-jat' }:
                 allOf
-                  { normTV(localize."$trLang".t).colon("\u2236").slash("\u2571") }
-                  { "[" + normTV(epName).colon("\u2236").slash("\u2571") + "]" }
-                .join(" ")
+                  { normTV(localize."$trLang".t).colon('\u2236').slash('\u2571') }
+                  { normTV(epName).colon('\u2236').slash('\u2571').surround('[', ']') }
+                .join(' ')
                 break
-              case { it == "eng" }:
-                normTV(epName).colon("\u2236").slash("\u2571")
+              case { it == 'eng' }:
+                normTV(epName).colon('\u2236').slash('\u2571')
                 break
               default:
-                normTV(localize."$trLang".t).colon("\u2236").slash("\u2571")
+                normTV(localize."$trLang".t).colon('\u2236').slash('\u2571')
               }
             }
-            { tags.join(", ").replaceAll(/^/, " - ") }
+            { tags.join(', ').replaceAll(/^/, ' - ') }
             { "PT $pi" }
             {
               allOf
@@ -96,20 +102,20 @@
                       { vf }
                       { vc }
                       { include '{{ scriptDir }}/partials/hdrPart.groovy' }
-                    .join(" ")
+                    .join(' ')
                   }
                   { include '{{ scriptDir }}/partials/audioPart.groovy' }
                   { include '{{ scriptDir }}/partials/extraSource.groovy' }
-                  .join(" - ").surround("[", "]")
+                  .join(' - ').surround('[', ']')
                 }
                 { "[$crc32]" }
                 { include '{{ scriptDir }}/partials/repackPart.groovy' }
                 {subt}
-              .join("")
+              .join('')
             }
-          .join(" ")
+          .join(' ')
         }
-      .join(" - ")
+      .join(' - ')
     }
-  .join("/")
+  .join('/')
 }
