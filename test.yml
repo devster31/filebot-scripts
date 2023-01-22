@@ -1,0 +1,10 @@
+---
+- name: test output
+  ansible.builtin.command:
+    cmd: /usr/local/bin/filebot -list --q {{ item.input }} --db {{ item.db }} --format {{ item.format }} {{ item.extra | d() }}
+  changed_when: false
+  register: result
+
+- name: test
+  ansible.builtin.assert:
+    that: result.stdout_lines[-1] == item.output

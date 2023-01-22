@@ -2,6 +2,18 @@
 # ansible-playbook -i <host>, playbook.yml
 - hosts: all
   tasks:
+    - name: test
+      ansible.builtin.include_tasks: test.yml
+      args:
+        apply:
+          tags:
+            - test
+          delegate_to: 127.0.0.1
+      tags:
+        - test
+      loop:
+        - { input: 'Chainsaw Man', output: 'Anime/Chainsaw Man (2022)/Season 1 (2022)/Chainsaw Man - 1x01 (01) - DOG & CHAINSAW', db: 'AniDB', format: 'animeFormat.groovy', extra: "--filter 's == 1 && e == 1'" }
+
     - name: copy qbittorrent script
       copy:
         src: qbittorrent-postprocess
