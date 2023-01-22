@@ -36,4 +36,4 @@ if (specials.size() > 0) {
     specials.unique()
 }
 
-"-${specials.join(commaSpace)}"
+" - ${specials.join(commaSpace)}"
