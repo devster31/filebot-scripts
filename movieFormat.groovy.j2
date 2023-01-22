@@ -2,6 +2,8 @@
   import groovy.json.JsonSlurper
   import groovy.json.JsonOutput
 
+  def sub = include('{{ scriptDir }}//partials/stdPart.groovy')
+
   def normMovie = {
     it.replaceTrailingBrackets()
       // .upperInitial().lowerTrail()
