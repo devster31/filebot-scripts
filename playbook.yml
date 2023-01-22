@@ -2,11 +2,20 @@
 # ansible-playbook -i <host>, playbook.yml
 - hosts: all
   tasks:
+    - name: copy qbittorrent script
+      copy:
+        src: qbittorrent-postprocess
+        dest: /srv/pv/scripts/qbittorrent-postprocess
+        backup: true
+      tags: deploy
+
     - name: copy partials
       copy:
         src: "partials"
         dest: "/srv/pv/scripts/partials"
         backup: true
+      tags: deploy
+
     - name: template files out to destination
       ansible.builtin.template:
         src: "{{ item }}"
