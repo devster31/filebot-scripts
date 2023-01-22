@@ -20,86 +20,96 @@
     l + delegate + r
   }
 
-allOf
-  { "Anime" }
-  { allOf
-      { mainTitle }
-      { db.TheTVDB.y.toString().surround() }
-    .join(" ") }
-  {
-    // TODO: possibly replace with db.TheTVDB.special
-    if (episode.special) { // else { if (sc > 0) "Season $s" }
-      "Specials"
-    } else {
+  allOf
+    { "Anime" }
+    {
       allOf
-        { ["Season", db.TheTVDB.s].join(" ") }
-        { if (mainTitle.getSimilarity(primTitle) < 0.95) primTitle.surround("[", "]") }
-        { db.TheTVDB.sy.bounds().join("-").surround() }
+        { mainTitle }
+        { db.TheTVDB.y.toString().surround() }
       .join(" ")
     }
-  }
-  { allOf
-  	{ allOf
-        { include "{{ scriptDir }}/partials/groupPart.groovy" }
-        { mainTitle }
-      .join(" ") }
-    { // EPISODE NUMBERING
-      // String _absolute = "EP" + db.TheTVDB.absolute.pad(2)
-      if (episode.special) {
-        "S$special"
+    {
+      // TODO: possibly replace with db.TheTVDB.special
+      if (episode.special) { // else { if (sc > 0) "Season $s" }
+        "Specials"
       } else {
-        any
-          { allOf
-              /*
-              { if (db.TheTVDB.sc > 1) db.TheTVDB.s00e00 }
-              { db.TheTVDB.sc > 1 ? _absolute.surround("(", ")") : _absolute }
-              */
-              { db.TheTVDB.sxe }
-              { db.TheTVDB.absolute.pad(2).surround() }
-            .join(" ") }
-          { absolute.pad(2) }
+        allOf
+          { ["Season", db.TheTVDB.s].join(" ") }
+          { if (mainTitle.getSimilarity(primTitle) < 0.95) primTitle.surround("[", "]") }
+          { db.TheTVDB.sy.bounds().join("-").surround() }
+        .join(" ")
       }
     }
-    { allOf
-      { // EPISODE NAME
-        def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
-        def epName = any{ db.TheTVDB.t }{t}
-        // ╱ is the replacement for slash
-        switch (trLang) {
-          case { it == "x-jat" }:
+    {
+      allOf
+        {
           allOf
-            { normTV(localize."$trLang".t).colon("\u2236").slash("\u2571") }
-            { "[" + normTV(epName).colon("\u2236").slash("\u2571") + "]" }
+            { include '{{ scriptDir }}/partials/groupPart.groovy' }
+            { mainTitle }
           .join(" ")
-          break
-        case { it == "eng" }:
-          normTV(epName).colon("\u2236").slash("\u2571")
-          break
-        default:
-          normTV(localize."$trLang".t).colon("\u2236").slash("\u2571")
         }
-      }
-      { tags.join(", ").replaceAll(/^/, " - ") }
-      { "PT $pi" }
-      { allOf
-        { allOf
-          { // Video
-            // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
-            allOf
-              { vf }
-              { vc }
-              { include '{{ scriptDir }}/partials/hdrPart.groovy' }
-            .join(" ")
+        { // EPISODE NUMBERING
+          // String _absolute = "EP" + db.TheTVDB.absolute.pad(2)
+          if (episode.special) {
+            "S$special"
+          } else {
+            any
+              { allOf
+                  /*
+                  { if (db.TheTVDB.sc > 1) db.TheTVDB.s00e00 }
+                  { db.TheTVDB.sc > 1 ? _absolute.surround("(", ")") : _absolute }
+                  */
+                  { db.TheTVDB.sxe }
+                  { db.TheTVDB.absolute.pad(2).surround() }
+                .join(" ") }
+              { absolute.pad(2) }
           }
-          { include '{{ scriptDir }}/partials/audioPart.groovy' }
-          { include '{{ scriptDir }}/partials/extraSource.groovy' }
-          .join(" - ").surround("[", "]")
         }
-        { "[$crc32]" }
-        { include '{{ scriptDir }}/partials/repackPart.groovy' }
-        {subt}
-        .join("") }
-      .join(" ") }
-    .join(" - ") }
+        {
+          allOf
+            { // EPISODE NAME
+              def trLang = any{ if (isJpn) "x-jat" }{ if (isEng) "eng" }{ audio.language.first() }{"eng"}
+              def epName = any{ db.TheTVDB.t }{t}
+              // ╱ is the replacement for slash
+              switch (trLang) {
+                case { it == "x-jat" }:
+                allOf
+                  { normTV(localize."$trLang".t).colon("\u2236").slash("\u2571") }
+                  { "[" + normTV(epName).colon("\u2236").slash("\u2571") + "]" }
+                .join(" ")
+                break
+              case { it == "eng" }:
+                normTV(epName).colon("\u2236").slash("\u2571")
+                break
+              default:
+                normTV(localize."$trLang".t).colon("\u2236").slash("\u2571")
+              }
+            }
+            { tags.join(", ").replaceAll(/^/, " - ") }
+            { "PT $pi" }
+            {
+              allOf
+                { allOf
+                  { // Video
+                    // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
+                    allOf
+                      { vf }
+                      { vc }
+                      { include '{{ scriptDir }}/partials/hdrPart.groovy' }
+                    .join(" ")
+                  }
+                  { include '{{ scriptDir }}/partials/audioPart.groovy' }
+                  { include '{{ scriptDir }}/partials/extraSource.groovy' }
+                  .join(" - ").surround("[", "]")
+                }
+                { "[$crc32]" }
+                { include '{{ scriptDir }}/partials/repackPart.groovy' }
+                {subt}
+              .join("")
+            }
+          .join(" ")
+        }
+      .join(" - ")
+    }
   .join("/")
 }

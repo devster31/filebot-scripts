@@ -59,29 +59,31 @@
     { def film_directors = info.directors.sort().join(", ")
       n.colon("\u2236 ") + " ($y) [$film_directors]" }
     // File name
-    { allOf
-      { isLatin(primaryTitle) ? primaryTitle.colon("\u2236 ") : transl(primaryTitle).colon("\u2236 ") }
-      {" ($y)"}
-      // tags + a few more variants
-      { include '{{ scriptDir }}/partials/extraTags.groovy' }
-      {" PT $pi"}
-      {" ["}
-      { allOf
-        { // Video
-          // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
-          allOf
-            { vf }
-            { vc }
-            { include '{{ scriptDir }}/partials/hdrPart.groovy' }
-          .join(" ")
-        }
-        { include '{{ scriptDir }}/partials/audioPart.groovy' }
-        { include '{{ scriptDir }}/partials/extraSource.groovy' }
-        .join(" - ") }
-      {"]"}
-      { include '{{ scriptDir }}/partials/repackPart.groovy' }
-      { include "{{ scriptDir }}/partials/groupPart.groovy" }
-      {subt}
-    .join("") }
+    {
+      allOf
+        { isLatin(primaryTitle) ? primaryTitle.colon("\u2236 ") : transl(primaryTitle).colon("\u2236 ") }
+        {" ($y)"}
+        // tags + a few more variants
+        { include '{{ scriptDir }}/partials/extraTags.groovy' }
+        {" PT $pi"}
+        {" ["}
+        { allOf
+          { // Video
+            // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
+            allOf
+              { vf }
+              { vc }
+              { include '{{ scriptDir }}/partials/hdrPart.groovy' }
+            .join(" ")
+          }
+          { include '{{ scriptDir }}/partials/audioPart.groovy' }
+          { include '{{ scriptDir }}/partials/extraSource.groovy' }
+          .join(" - ") }
+        {"]"}
+        { include '{{ scriptDir }}/partials/repackPart.groovy' }
+        { include '{{ scriptDir }}/partials/groupPart.groovy' }
+        {subt}
+      .join("")
+    }
   .join("/")
 }

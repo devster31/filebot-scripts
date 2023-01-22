@@ -13,53 +13,64 @@
 
   allOf
     {"TV Shows"}
-    { allOf
+    {
+      allOf
         { (!isEng && (audio.language != null)) ?
           normTV(localize[audio.language[0]].n).colon(" - ").replaceTrailingBrackets() :
           normTV(n).colon(" - ").replaceTrailingBrackets() }
         { def firstYear = episodelist.find{ it.regular }.airdate.year
           "($firstYear)" }
-      .join(" ") }
+      .join(" ")
+    }
     { episode.special ? "Specials" : allOf{"Season"}{s}.join(" ") }
     /* allOf{"Season"}{s}{sy}.join(" ") --- {sc >= 10 ? s.pad(2) : s} */
-    { allOf
-      {
-        if (!isEng && (audio.language != null)) {
-          normTV(localize[audio.language[0]].n).colon("\u2236 ").replaceTrailingBrackets()
-        } else {
-          normTV(n).colon("\u2236 ").replaceTrailingBrackets()
-        }
-      { episode.special ? "S00E" + special.pad(2) : s00e00 }
-      { allOf
-        // { t.replacePart(replacement = ", Part $1") }
+    {
+      allOf
         {
           if (!isEng && (audio.language != null)) {
-            normTV(localize[audio.language[0]].t).colon("\u2236 ").slash("\u2571")
+            normTV(localize[audio.language[0]].n).colon("\u2236 ").replaceTrailingBrackets()
           } else {
-            normTV(t).colon("\u2236 ").slash("\u2571") // ╱ is the replacement for slash
+            normTV(n).colon("\u2236 ").replaceTrailingBrackets()
           }
         }
-        {"PT $pi"}
-        { allOf
-        {" ["}
-        { allOf
-          { // Video
-            // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
-            allOf
-              { vf }
-              { vc }
-              { include '{{ scriptDir }}/partials/hdrPart.groovy' }
-            .join(" ")
-          }
-          { include '{{ scriptDir }}/partials/audioPart.groovy' }
-          { include '{{ scriptDir }}/partials/extraSource.groovy' }
-          .join(" - ") }
-        {"]"}
-        { include '{{ scriptDir }}/partials/repackPart.groovy' }
-        { include "{{ scriptDir }}/partials/groupPart.groovy" }
-        {subt}
-        .join("") }
-      .join(" ") }
-    .join(" - ") }
+        { episode.special ? "S00E" + special.pad(2) : s00e00 }
+        {
+          allOf
+            // { t.replacePart(replacement = ", Part $1") }
+            {
+              if (!isEng && (audio.language != null)) {
+                normTV(localize[audio.language[0]].t).colon("\u2236 ").slash("\u2571")
+              } else {
+                normTV(t).colon("\u2236 ").slash("\u2571") // ╱ is the replacement for slash
+              }
+            }
+            {"PT $pi"}
+            {
+              allOf
+                {" ["}
+                {
+                  allOf
+                  { // Video
+                    // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
+                    allOf
+                      { vf }
+                      { vc }
+                      { include '{{ scriptDir }}/partials/hdrPart.groovy' }
+                    .join(" ")
+                  }
+                  { include '{{ scriptDir }}/partials/audioPart.groovy' }
+                  { include '{{ scriptDir }}/partials/extraSource.groovy' }
+                  .join(" - ")
+                }
+                {"]"}
+                { include '{{ scriptDir }}/partials/repackPart.groovy' }
+                { include '{{ scriptDir }}/partials/groupPart.groovy' }
+                {subt}
+              .join("")
+            }
+          .join(" ")
+        }
+      .join(" - ")
+    }
   .join("/")
 }
