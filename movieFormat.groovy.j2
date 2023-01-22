@@ -23,7 +23,7 @@
       .replaceAll(/\b[0-9](?i:th|nd|rd)\b/, { it.lower() })
   }
 
-  Boolean isLatin = {
+  Closure<Boolean> isLatin = {
     java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD)
                         .replaceAll(/\p{InCombiningDiacriticalMarks}+/, '') ==~ /^\p{InBasicLatin}+$/
   }
@@ -67,22 +67,24 @@
         { include '{{ scriptDir }}/partials/extraTags.groovy' }
         {" PT $pi"}
         {" ["}
-        { allOf
-          { // Video
-            // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
-            allOf
-              { vf }
-              { vc }
-              { include '{{ scriptDir }}/partials/hdrPart.groovy' }
-            .join(" ")
-          }
-          { include '{{ scriptDir }}/partials/audioPart.groovy' }
-          { include '{{ scriptDir }}/partials/extraSource.groovy' }
-          .join(" - ") }
+        {
+          allOf
+            { // Video
+              // net.filebot.media.VideoFormat.DEFAULT_GROUPS.guessFormat(dim[0], dim[1])
+              allOf
+                { vf }
+                { vc }
+                { include '{{ scriptDir }}/partials/hdrPart.groovy' }
+              .join(" ")
+            }
+            { include '{{ scriptDir }}/partials/audioPart.groovy' }
+            { include '{{ scriptDir }}/partials/extraSource.groovy' }
+          .join(" - ")
+        }
         {"]"}
         { include '{{ scriptDir }}/partials/repackPart.groovy' }
         { include '{{ scriptDir }}/partials/groupPart.groovy' }
-        {subt}
+        { subt }
       .join("")
     }
   .join("/")
